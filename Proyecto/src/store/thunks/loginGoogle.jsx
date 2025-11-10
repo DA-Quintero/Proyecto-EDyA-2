@@ -1,5 +1,6 @@
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth, db } from "../../firebase/config";
 import { setUser } from "../slices/authSlice";
 
 export const loginWithGoogle = () => {
@@ -9,19 +10,32 @@ export const loginWithGoogle = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
+      // Verificar si ya existe en Firestore
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          createdAt: new Date().toISOString(),
+        });
+      }
+
+      // Guardar en Redux
       dispatch(
         setUser({
           uid: user.uid,
           email: user.email,
-          displayName: user.displayName || "Usuario",
-          photoURL: user.photoURL || "",
+          displayName: user.displayName,
         })
       );
 
       return { success: true };
-    } catch (error) {
-      console.error("Error en el login con Google:", error.code, error.message);
-      return { success: false, message: error.message };
+    } catch (err) {
+      console.error("Error en login con Google:", err);
+      return { success: false, message: err.message };
     }
   };
 };
