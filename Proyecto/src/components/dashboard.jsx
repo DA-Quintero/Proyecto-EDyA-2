@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutAuth } from "../../store/thunks/logoutAuth";
+import { logoutAuth } from "../store/thunks/logoutAuth";
 
 export default function Dashboard() {
   const dispatch = useDispatch();

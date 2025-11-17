@@ -5,9 +5,10 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/config";
 import { setUser, clearUser } from "./store/slices/authSlice";
 
-import Login from "./components/pages/Login";
-import Register from "./components/pages/Register";
-import Dashboard from "./components/pages/dashboard";
+import Home from "./components/pages/home";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Dashboard from "./components/dashboard";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -34,11 +35,8 @@ const App = () => {
 
   return (
     <Routes>
-      {/* Ruta raíz → redirige según sesión */}
-      <Route
-        path="/"
-        element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />}
-      />
+      {/* Home pública */}
+      <Route path="/" element={<Home />} />
 
       {/* Login */}
       <Route
