@@ -14,6 +14,14 @@ import { setUser } from "../../store/slices/authSlice";
 import { logoutAuth } from "../../store/thunks/logoutAuth";
 import { useNavigate } from "react-router-dom";
 
+import {
+  calcularEstadoDias,
+  calcularDiasRestantes,
+  calcularMulta,
+  formatearFecha,
+  formatearPesos,
+} from "../utils/utils";
+
 import "../toast.css";
 import styles from "./Profile.module.scss";
 
@@ -83,7 +91,6 @@ export default function Profile() {
     loadUserData();
   }, [user, dispatch]);
 
-
   useEffect(() => {
     const cargarPrestamos = async () => {
       if (!user) return;
@@ -128,7 +135,6 @@ export default function Profile() {
     cargarPrestamos();
   }, [user]);
 
-
   useEffect(() => {
     const cargarFavoritos = async () => {
       if (!user || !user.favoritos || user.favoritos.length === 0) {
@@ -138,9 +144,7 @@ export default function Profile() {
 
       try {
         const booksRef = collection(db, "books");
-
         const q = query(booksRef, where("__name__", "in", user.favoritos));
-
         const snap = await getDocs(q);
 
         const libros = snap.docs.map((doc) => ({
@@ -200,33 +204,6 @@ export default function Profile() {
     }
   };
 
-
-  const formatFecha = () => {
-    if (!extra.createdAt) return "—";
-    const fecha = new Date(extra.createdAt);
-    return fecha.toLocaleDateString("es-ES", {
-      month: "long",
-      year: "numeric",
-    });
-  };
-
-  const calcularEstadoDias = (fechaDevolucionISO) => {
-    const hoy = new Date();
-    const devolucion = new Date(fechaDevolucionISO);
-
-    const diff = devolucion - hoy;
-    const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-    if (dias > 0) return `(Faltan ${dias} días)`;
-    if (dias === 0) return `(Vence hoy)`;
-    return `(${Math.abs(dias)} días atrasado)`;
-  };
-
-  const calcularMulta = (dias) => {
-    if (dias >= 0) return 0;
-    return Math.abs(dias) * 1500;
-  };
-
   if (loading) return <p>Cargando perfil...</p>;
 
   return (
@@ -235,7 +212,8 @@ export default function Profile() {
         <h3>{user.displayName}</h3>
 
         <p>
-          Socio desde: <strong>{formatFecha()}</strong>
+          Socio desde:{" "}
+          <strong>{extra.createdAt ? formatearFecha(extra.createdAt) : "—"}</strong>
         </p>
 
         <p>
@@ -315,12 +293,7 @@ export default function Profile() {
           <h3>Préstamos activos</h3>
 
           {prestamosUsuario.map((p) => {
-            const hoy = new Date();
-            const devolucion = new Date(p.fechaDevolucion);
-
-            const diff = devolucion - hoy;
-            const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
+            const dias = calcularDiasRestantes(p.fechaDevolucion);
             const multa = calcularMulta(dias);
 
             return (
@@ -331,12 +304,12 @@ export default function Profile() {
 
                 <p>
                   <strong>Fecha préstamo:</strong>{" "}
-                  {new Date(p.fechaPrestamo).toLocaleDateString()}
+                  {formatearFecha(p.fechaPrestamo)}
                 </p>
 
                 <p>
                   <strong>Fecha devolución:</strong>{" "}
-                  {new Date(p.fechaDevolucion).toLocaleDateString()}{" "}
+                  {formatearFecha(p.fechaDevolucion)}{" "}
                   <span className={styles.estadoDias}>
                     {calcularEstadoDias(p.fechaDevolucion)}
                   </span>
@@ -344,7 +317,7 @@ export default function Profile() {
 
                 {dias < 0 && (
                   <p className={styles.multaBox}>
-                    <strong>Multa:</strong> ${multa.toLocaleString()}
+                    <strong>Multa:</strong> {formatearPesos(multa)}
                   </p>
                 )}
 
@@ -359,6 +332,7 @@ export default function Profile() {
           })}
         </div>
       )}
+
       {activeTab === "favoritos" && (
         <div className={styles.sectionBox}>
           <h3>Libros favoritos</h3>
