@@ -1,0 +1,186 @@
+.container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: "Inter", sans-serif;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #444;
+    transition: 0.2s ease;
+
+    &:hover {
+        color: #000;
+        transform: translateX(-3px);
+    }
+}
+
+.title {
+    font-size: 24px;
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+/* Título del libro */
+.bookName {
+    background: #f2f2f2;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    border-left: 5px solid #4c8bf5;
+    color: #333;
+
+    strong {
+        color: #1b63d8;
+    }
+}
+
+.form {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    label {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 15px;
+        border-radius: 10px;
+        border: 1px solid #dcdcdc;
+        outline: none;
+        transition: 0.2s ease;
+
+        &:focus {
+            border-color: #4c8bf5;
+            box-shadow: 0 0 4px rgba(76, 139, 245, 0.4);
+        }
+    }
+
+    textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
+}
+
+.submitBtn {
+    background: #4c8bf5;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+
+    &:hover {
+        background: #3a75d3;
+    }
+
+    &:disabled {
+        background: #a9c3f0;
+        cursor: not-allowed;
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+    }
+
+    .form {
+        padding: 18px;
+    }
+}
+.boton {
+  background-color: #32cd32;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: #28b428;
+  }
+}
+
+.botonPrestado {
+  background-color: #1e7d1e; // verde más oscuro
+  color: #c6c6c6;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+  z-index: 999;
+}
+
+.modalBox {
+  background: white;
+  padding: 25px;
+  width: 80%;
+  max-width: 370px;
+  border-radius: 12px;
+  text-align: center;
+  animation: scaleIn 0.3s ease;
+}
+
+.modalBox button {
+  margin-top: 15px;
+  padding: 8px 14px;
+  border: none;
+  background: #4caf50;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}

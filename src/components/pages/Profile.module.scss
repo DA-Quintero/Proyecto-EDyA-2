@@ -172,3 +172,39 @@ body {
   margin: 2px 0 0;
   color: #555;
 }
+
+.prestamoItem {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #f7f7f7;
+  margin-bottom: 12px;
+
+  p {
+    margin: 4px 0;
+  }
+}
+.estadoDias {
+  font-weight: bold;
+  margin-left: 6px;
+
+  &::before {
+    content: " ";
+  }
+
+  color: #0a7cff; // días restantes
+}
+
+.estadoDias.atrasado {
+  color: #d9534f; // rojo si está atrasado
+}
+
+.multaBox {
+  background: #ffdddd;
+  padding: 8px;
+  border-left: 4px solid red;
+  border-radius: 6px;
+  margin-top: 6px;
+  font-weight: bold;
+  color: #900;
+}

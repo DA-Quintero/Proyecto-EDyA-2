@@ -13,6 +13,7 @@ import { db } from "../../firebase/config";
 import { setUser } from "../../store/slices/authSlice";
 import { logoutAuth } from "../../store/thunks/logoutAuth";
 import { useNavigate } from "react-router-dom";
+
 import "../toast.css";
 import styles from "./Profile.module.scss";
 
@@ -25,6 +26,8 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState("");
+  const [prestamosUsuario, setPrestamosUsuario] = useState([]);
+  const [favoritoLibros, setFavoritoLibros] = useState([]);
 
   const [form, setForm] = useState({
     email: "",
@@ -38,19 +41,11 @@ export default function Profile() {
     favoritos: 0,
   });
 
-  const [favoritoLibros, setFavoritoLibros] = useState([]);
-
-  // -------------------------------
-  // TOAST
-  // -------------------------------
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2000);
   };
 
-  // -------------------------------
-  // 1. Cargar datos del usuario desde Firestore
-  // -------------------------------
   useEffect(() => {
     const loadUserData = async () => {
       if (!user) return;
@@ -76,7 +71,6 @@ export default function Profile() {
               : 0,
           });
 
-          // MERGE CON REDUX
           dispatch(setUser({ ...user, ...data }));
         }
       } catch (err) {
@@ -89,9 +83,52 @@ export default function Profile() {
     loadUserData();
   }, [user, dispatch]);
 
-  // -------------------------------
-  // 2. Cargar libros favoritos desde Firestore
-  // -------------------------------
+
+  useEffect(() => {
+    const cargarPrestamos = async () => {
+      if (!user) return;
+
+      try {
+        const q = query(
+          collection(db, "prestamos"),
+          where("usuarioId", "==", user.uid)
+        );
+
+        const snap = await getDocs(q);
+
+        const prestamosBase = snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+
+        const prestamosConTitulo = await Promise.all(
+          prestamosBase.map(async (p) => {
+            try {
+              const libroRef = doc(db, "books", p.libroId);
+              const libroSnap = await getDoc(libroRef);
+
+              return {
+                ...p,
+                libroTitulo: libroSnap.exists()
+                  ? libroSnap.data().titulo
+                  : "Título no encontrado",
+              };
+            } catch {
+              return { ...p, libroTitulo: "Error cargando libro" };
+            }
+          })
+        );
+
+        setPrestamosUsuario(prestamosConTitulo);
+      } catch (err) {
+        console.error("Error cargando préstamos:", err);
+      }
+    };
+
+    cargarPrestamos();
+  }, [user]);
+
+
   useEffect(() => {
     const cargarFavoritos = async () => {
       if (!user || !user.favoritos || user.favoritos.length === 0) {
@@ -102,10 +139,7 @@ export default function Profile() {
       try {
         const booksRef = collection(db, "books");
 
-        const q = query(
-          booksRef,
-          where("__name__", "in", user.favoritos)
-        );
+        const q = query(booksRef, where("__name__", "in", user.favoritos));
 
         const snap = await getDocs(q);
 
@@ -123,9 +157,6 @@ export default function Profile() {
     cargarFavoritos();
   }, [user]);
 
-  // -------------------------------
-  // HANDLERS
-  // -------------------------------
   const onChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -169,6 +200,7 @@ export default function Profile() {
     }
   };
 
+
   const formatFecha = () => {
     if (!extra.createdAt) return "—";
     const fecha = new Date(extra.createdAt);
@@ -178,14 +210,27 @@ export default function Profile() {
     });
   };
 
-  // -------------------------------
-  // RENDER
-  // -------------------------------
+  const calcularEstadoDias = (fechaDevolucionISO) => {
+    const hoy = new Date();
+    const devolucion = new Date(fechaDevolucionISO);
+
+    const diff = devolucion - hoy;
+    const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+    if (dias > 0) return `(Faltan ${dias} días)`;
+    if (dias === 0) return `(Vence hoy)`;
+    return `(${Math.abs(dias)} días atrasado)`;
+  };
+
+  const calcularMulta = (dias) => {
+    if (dias >= 0) return 0;
+    return Math.abs(dias) * 1500;
+  };
+
   if (loading) return <p>Cargando perfil...</p>;
 
   return (
     <div className={styles.container}>
-      {/* PANEL IZQUIERDO */}
       <div className={styles.leftPanel}>
         <h3>{user.displayName}</h3>
 
@@ -202,10 +247,8 @@ export default function Profile() {
         </p>
       </div>
 
-      {/* TOAST */}
       {toast && <div className="toast">{toast}</div>}
 
-      {/* HEADER */}
       <header className={styles.header}>
         <button onClick={() => navigate("/")} className={styles.backBtn}>
           ⬅ Volver
@@ -220,7 +263,6 @@ export default function Profile() {
 
       <div className={styles.headerSpacer} />
 
-      {/* NAVBAR */}
       <nav className={styles.navbar}>
         {["informacion", "prestamos", "historial", "favoritos"].map((tab) => (
           <button
@@ -235,7 +277,6 @@ export default function Profile() {
         ))}
       </nav>
 
-      {/* CONTENIDO */}
       {activeTab === "informacion" && (
         <div className={styles.infoContent}>
           <div className={styles.formPanel}>
@@ -272,17 +313,52 @@ export default function Profile() {
       {activeTab === "prestamos" && (
         <div className={styles.sectionBox}>
           <h3>Préstamos activos</h3>
-          <p>No hay préstamos cargados todavía.</p>
+
+          {prestamosUsuario.map((p) => {
+            const hoy = new Date();
+            const devolucion = new Date(p.fechaDevolucion);
+
+            const diff = devolucion - hoy;
+            const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+            const multa = calcularMulta(dias);
+
+            return (
+              <div key={p.id} className={styles.prestamoItem}>
+                <p>
+                  <strong>Libro:</strong> {p.libroTitulo}
+                </p>
+
+                <p>
+                  <strong>Fecha préstamo:</strong>{" "}
+                  {new Date(p.fechaPrestamo).toLocaleDateString()}
+                </p>
+
+                <p>
+                  <strong>Fecha devolución:</strong>{" "}
+                  {new Date(p.fechaDevolucion).toLocaleDateString()}{" "}
+                  <span className={styles.estadoDias}>
+                    {calcularEstadoDias(p.fechaDevolucion)}
+                  </span>
+                </p>
+
+                {dias < 0 && (
+                  <p className={styles.multaBox}>
+                    <strong>Multa:</strong> ${multa.toLocaleString()}
+                  </p>
+                )}
+
+                <p>
+                  <strong>Cédula:</strong> {p.cedula}
+                </p>
+                <p>
+                  <strong>Teléfono:</strong> {p.telefono}
+                </p>
+              </div>
+            );
+          })}
         </div>
       )}
-
-      {activeTab === "historial" && (
-        <div className={styles.sectionBox}>
-          <h3>Historial de préstamos</h3>
-          <p>Historial vacío.</p>
-        </div>
-      )}
-
       {activeTab === "favoritos" && (
         <div className={styles.sectionBox}>
           <h3>Libros favoritos</h3>
