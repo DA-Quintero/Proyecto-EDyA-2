@@ -20,7 +20,7 @@ import {
   calcularMulta,
   formatearFecha,
   formatearPesos,
-} from "../utils/utils";
+} from "../utils";
 
 import "../toast.css";
 import styles from "./Profile.module.scss";
