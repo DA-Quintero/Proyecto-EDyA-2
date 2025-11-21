@@ -8,6 +8,9 @@ import {
   query,
   where,
   getDocs,
+  addDoc,
+  deleteDoc,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { setUser } from "../../store/slices/authSlice";
@@ -20,7 +23,9 @@ import {
   calcularMulta,
   formatearFecha,
   formatearPesos,
-} from "../utils/utils";
+} from "../utils";
+import { procesarFilaEspera } from "../utils/procesarFilaEspera";
+
 
 import "../toast.css";
 import styles from "./Profile.module.scss";
@@ -54,6 +59,47 @@ export default function Profile() {
     setTimeout(() => setToast(""), 2000);
   };
 
+  // --- NUEVA FUNCIÓN: Procesar fila FIFO ---
+  
+
+  const devolverLibro = async (prestamoId, libroId) => {
+  try {
+    // Marcar préstamo como devuelto
+    const prestamoRef = doc(db, "prestamos", prestamoId);
+    await updateDoc(prestamoRef, { estado: "devuelto" });
+
+    // Actualizar stock del libro
+    const libroRef = doc(db, "books", libroId);
+    const libroSnap = await getDoc(libroRef);
+    const libroData = libroSnap.data();
+    await updateDoc(libroRef, { disponibles: libroData.disponibles + 1 });
+
+    // Actualizar prestamosActivos del usuario
+    const userRef = doc(db, "users", user.uid);
+    await updateDoc(userRef, {
+      prestamosActivos: Math.max((user.prestamosActivos || 1) - 1, 0)
+    });
+
+    // Actualizar estado local para que desaparezca de la lista
+    setPrestamosUsuario(prev => prev.filter(p => p.id !== prestamoId));
+
+    // Procesar fila de espera automáticamente
+    await procesarFilaEspera(libroId, {
+  userIdActual: user.uid,
+  showToast,
+  actualizarPrestamosLocal: (nuevoPrestamo) =>
+    setPrestamosUsuario(prev => [...prev, nuevoPrestamo])
+});
+
+
+    showToast("Libro devuelto correctamente ✔️");
+  } catch (error) {
+    console.error("Error devolviendo libro:", error);
+    showToast("Error al devolver libro ❌");
+  }
+};
+
+  // --- Carga datos usuario y prestamos ---
   useEffect(() => {
     const loadUserData = async () => {
       if (!user) return;
@@ -74,9 +120,7 @@ export default function Profile() {
           setExtra({
             createdAt: data.createdAt || null,
             prestamosActivos: data.prestamosActivos || 0,
-            favoritos: Array.isArray(data.favoritos)
-              ? data.favoritos.length
-              : 0,
+            favoritos: Array.isArray(data.favoritos) ? data.favoritos.length : 0,
           });
 
           dispatch(setUser({ ...user, ...data }));
@@ -97,16 +141,15 @@ export default function Profile() {
 
       try {
         const q = query(
-          collection(db, "prestamos"),
-          where("usuarioId", "==", user.uid)
-        );
+  collection(db, "prestamos"),
+  where("usuarioId", "==", user.uid),
+  where("estado", "==", "activo") // Filtra solo los préstamos activos
+);
+
 
         const snap = await getDocs(q);
 
-        const prestamosBase = snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        }));
+        const prestamosBase = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
         const prestamosConTitulo = await Promise.all(
           prestamosBase.map(async (p) => {
@@ -116,9 +159,7 @@ export default function Profile() {
 
               return {
                 ...p,
-                libroTitulo: libroSnap.exists()
-                  ? libroSnap.data().titulo
-                  : "Título no encontrado",
+                libroTitulo: libroSnap.exists() ? libroSnap.data().titulo : "Título no encontrado",
               };
             } catch {
               return { ...p, libroTitulo: "Error cargando libro" };
@@ -288,50 +329,58 @@ export default function Profile() {
         </div>
       )}
 
-      {activeTab === "prestamos" && (
-        <div className={styles.sectionBox}>
-          <h3>Préstamos activos</h3>
+     {activeTab === "prestamos" && (
+  <div className={styles.sectionBox}>
+    <h3>Préstamos activos</h3>
 
-          {prestamosUsuario.map((p) => {
-            const dias = calcularDiasRestantes(p.fechaDevolucion);
-            const multa = calcularMulta(dias);
+    {prestamosUsuario.map((p) => {
+      const dias = calcularDiasRestantes(p.fechaDevolucion);
+      const multa = calcularMulta(dias);
 
-            return (
-              <div key={p.id} className={styles.prestamoItem}>
-                <p>
-                  <strong>Libro:</strong> {p.libroTitulo}
-                </p>
+      return (
+        <div key={p.id} className={styles.prestamoItem}>
+          <p>
+            <strong>Libro:</strong> {p.libroTitulo}
+          </p>
 
-                <p>
-                  <strong>Fecha préstamo:</strong>{" "}
-                  {formatearFecha(p.fechaPrestamo)}
-                </p>
+          <p>
+            <strong>Fecha préstamo:</strong>{" "}
+            {formatearFecha(p.fechaPrestamo)}
+          </p>
 
-                <p>
-                  <strong>Fecha devolución:</strong>{" "}
-                  {formatearFecha(p.fechaDevolucion)}{" "}
-                  <span className={styles.estadoDias}>
-                    {calcularEstadoDias(p.fechaDevolucion)}
-                  </span>
-                </p>
+          <p>
+            <strong>Fecha devolución:</strong>{" "}
+            {formatearFecha(p.fechaDevolucion)}{" "}
+            <span className={styles.estadoDias}>
+              {calcularEstadoDias(p.fechaDevolucion)}
+            </span>
+          </p>
 
-                {dias < 0 && (
-                  <p className={styles.multaBox}>
-                    <strong>Multa:</strong> {formatearPesos(multa)}
-                  </p>
-                )}
+          {dias < 0 && (
+            <p className={styles.multaBox}>
+              <strong>Multa:</strong> {formatearPesos(multa)}
+            </p>
+          )}
 
-                <p>
-                  <strong>Cédula:</strong> {p.cedula}
-                </p>
-                <p>
-                  <strong>Teléfono:</strong> {p.telefono}
-                </p>
-              </div>
-            );
-          })}
+          <p>
+            <strong>Cédula:</strong> {p.cedula}
+          </p>
+          <p>
+            <strong>Teléfono:</strong> {p.telefono}
+          </p>
+
+          <button
+            className={styles.devolverBtn}
+            onClick={() => devolverLibro(p.id, p.libroId)}
+          >
+            Devolver
+          </button>
         </div>
-      )}
+      );
+    })}
+  </div>
+)}
+
 
       {activeTab === "favoritos" && (
         <div className={styles.sectionBox}>
