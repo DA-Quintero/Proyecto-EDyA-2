@@ -1,5 +1,6 @@
 // Importar variables globales
-@import './index.scss';
+@use './index.scss' as *;
+@use 'sass:color';
 
 // MIXINS REUTILIZABLES
 
@@ -383,7 +384,7 @@
   transition: background $transition-base;
 
   &:hover {
-    background: darken($border-color, 10%);
+    background: color.adjust($border-color, $lightness: -10%);
   }
 }
 
@@ -822,7 +823,7 @@
   }
 
   &:disabled {
-    background: lighten($info, 30%);
+    background: color.adjust($info, $lightness: 30%);
     cursor: not-allowed;
   }
 }
@@ -853,7 +854,7 @@
 }
 
 .prestamoBotonPrestado {
-  background-color: darken($success, 15%);
+  background-color: color.adjust($success, $lightness: -15%);
   color: #c6c6c6;
   padding: 10px 15px;
   border-radius: 6px;
