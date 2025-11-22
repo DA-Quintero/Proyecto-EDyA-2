@@ -39,6 +39,7 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState("");
   const [prestamosUsuario, setPrestamosUsuario] = useState([]);
+  const [historialPrestamos, setHistorialPrestamos] = useState([]);
   const [favoritoLibros, setFavoritoLibros] = useState([]);
 
   const [form, setForm] = useState({
@@ -81,6 +82,9 @@ export default function Profile() {
 
     // Actualizar estado local para que desaparezca de la lista
     setPrestamosUsuario(prev => prev.filter(p => p.id !== prestamoId));
+
+    // Recargar historial de préstamos devueltos
+    await cargarHistorial();
 
     // Procesar fila de espera automáticamente
     await procesarFilaEspera(libroId, {
@@ -173,6 +177,55 @@ export default function Profile() {
     };
 
     cargarPrestamos();
+  }, [user]);
+
+  const cargarHistorial = async () => {
+    if (!user) return;
+
+    try {
+      const q = query(
+        collection(db, "prestamos"),
+        where("usuarioId", "==", user.uid),
+        where("estado", "==", "devuelto")
+      );
+
+      const snap = await getDocs(q);
+
+      const prestamosBase = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      
+      console.log("Préstamos devueltos encontrados:", prestamosBase);
+
+      // Ordenar por fecha de devolución manualmente (más reciente primero)
+      const prestamosOrdenados = prestamosBase.sort((a, b) => {
+        const fechaA = a.fechaDevolucion?.toDate?.() || new Date(a.fechaDevolucion);
+        const fechaB = b.fechaDevolucion?.toDate?.() || new Date(b.fechaDevolucion);
+        return fechaB - fechaA;
+      });
+
+      const prestamosConTitulo = await Promise.all(
+        prestamosOrdenados.map(async (p) => {
+          try {
+            const libroRef = doc(db, "books", p.libroId);
+            const libroSnap = await getDoc(libroRef);
+
+            return {
+              ...p,
+              libroTitulo: libroSnap.exists() ? libroSnap.data().titulo : "Título no encontrado",
+            };
+          } catch {
+            return { ...p, libroTitulo: "Error cargando libro" };
+          }
+        })
+      );
+
+      setHistorialPrestamos(prestamosConTitulo);
+    } catch (err) {
+      console.error("Error cargando historial:", err);
+    }
+  };
+
+  useEffect(() => {
+    cargarHistorial();
   }, [user]);
 
   useEffect(() => {
@@ -380,6 +433,38 @@ export default function Profile() {
   </div>
 )}
 
+
+      {activeTab === "historial" && (
+        <div className={styles.sectionBox}>
+          <h3>Historial de préstamos</h3>
+
+          {historialPrestamos.length === 0 ? (
+            <p>No hay préstamos devueltos todavía.</p>
+          ) : (
+            historialPrestamos.map((p) => (
+              <div key={p.id} className={styles.prestamoItem}>
+                <p>
+                  <strong>Libro:</strong> {p.libroTitulo}
+                </p>
+
+                <p>
+                  <strong>Fecha préstamo:</strong>{" "}
+                  {formatearFecha(p.fechaPrestamo)}
+                </p>
+
+                <p>
+                  <strong>Fecha devolución:</strong>{" "}
+                  {formatearFecha(p.fechaDevolucion)}
+                </p>
+
+                <p>
+                  <strong>Estado:</strong> <span className={styles.devueltoTag}>Devuelto ✓</span>
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       {activeTab === "favoritos" && (
         <div className={styles.sectionBox}>
