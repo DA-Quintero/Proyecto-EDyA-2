@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerAuth } from "../store/thunks/registerAuth";
 import { useNavigate, Link } from "react-router-dom";
-import styles from "./auth/auth.module.scss";
+import "../App.scss";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -27,20 +27,20 @@ const Register = () => {
 
 
   return (
-    <div className={styles.authWrapper}>
-      <div className={styles.authCard}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Crear cuenta</h2>
-          <p className={styles.subtitle}>Únete a BiblioTech en segundos</p>
+    <div className="authWrapper">
+      <div className="authCard">
+        <div className="authHeader">
+          <h2 className="authTitle">Crear cuenta</h2>
+          <p className="authSubtitle">Únete a BiblioTech en segundos</p>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label className={styles.label} htmlFor="name">Nombre de usuario</label>
+        <form onSubmit={handleSubmit} className="authForm">
+          <div className="authFormGroup">
+            <label className="authLabel" htmlFor="name">Nombre de usuario</label>
             <input
               id="name"
               type="text"
-              className={styles.input}
+              className="authInput"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Tu nombre"
@@ -48,12 +48,12 @@ const Register = () => {
             />
           </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label} htmlFor="email">Correo electrónico</label>
+          <div className="authFormGroup">
+            <label className="authLabel" htmlFor="email">Correo electrónico</label>
             <input
               id="email"
               type="email"
-              className={styles.input}
+              className="authInput"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tu@correo.com"
@@ -61,12 +61,12 @@ const Register = () => {
             />
           </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label} htmlFor="password">Contraseña</label>
+          <div className="authFormGroup">
+            <label className="authLabel" htmlFor="password">Contraseña</label>
             <input
               id="password"
               type="password"
-              className={styles.input}
+              className="authInput"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -74,16 +74,16 @@ const Register = () => {
             />
           </div>
 
-          <button type="submit" disabled={loading} className={styles.primaryBtn}>
+          <button type="submit" disabled={loading} className="authPrimaryBtn">
             {loading ? "Creando..." : "Registrarme"}
           </button>
         </form>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <p className="authError">{error}</p>}
 
-        <p className={styles.switch}>
+        <p className="authSwitch">
           ¿Ya tienes cuenta? {" "}
-          <Link to="/login" className={styles.link}>Inicia sesión</Link>
+          <Link to="/login" className="authLink">Inicia sesión</Link>
         </p>
       </div>
     </div>

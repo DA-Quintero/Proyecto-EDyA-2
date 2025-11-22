@@ -39,13 +39,4 @@ export class DoublyLinkedList {
 
         return result;
     }
-
-    findById(id) {
-        let current = this.head;
-        while (current) {
-            if (current.value.id === id) return current;
-            current = current.next;
-        }
-        return null;
-    }
 }

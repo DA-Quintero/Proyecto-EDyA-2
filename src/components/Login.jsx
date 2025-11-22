@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { loginWithGoogle } from "../store/thunks/loginGoogle";
 import { loginWithEmailAndPassword } from "../store/thunks/loginAuth";
 import { useNavigate, Link } from "react-router-dom";
-import styles from "./auth/auth.module.scss";
+import "../App.scss";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -34,19 +34,19 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.authWrapper}>
-      <div className={styles.authCard}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Iniciar sesión</h2>
-          <p className={styles.subtitle}>Bienvenido de vuelta a BiblioTech</p>
+    <div className="authWrapper">
+      <div className="authCard">
+        <div className="authHeader">
+          <h2 className="authTitle">Iniciar sesión</h2>
+          <p className="authSubtitle">Bienvenido de vuelta a BiblioTech</p>
         </div>
 
-        <form onSubmit={handleEmailLogin} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label className={styles.label} htmlFor="email">Correo electrónico</label>
+        <form onSubmit={handleEmailLogin} className="authForm">
+          <div className="authFormGroup">
+            <label className="authLabel" htmlFor="email">Correo electrónico</label>
             <input
               id="email"
-              className={styles.input}
+              className="authInput"
               type="email"
               placeholder="tu@correo.com"
               value={email}
@@ -55,11 +55,11 @@ const Login = () => {
             />
           </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label} htmlFor="password">Contraseña</label>
+          <div className="authFormGroup">
+            <label className="authLabel" htmlFor="password">Contraseña</label>
             <input
               id="password"
-              className={styles.input}
+              className="authInput"
               type="password"
               placeholder="••••••••"
               value={password}
@@ -68,19 +68,19 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className={styles.primaryBtn}>Entrar</button>
+          <button type="submit" className="authPrimaryBtn">Entrar</button>
         </form>
 
-        <button type="button" onClick={handleGoogleLogin} className={styles.googleBtn}>
+        <button type="button" onClick={handleGoogleLogin} className="authGoogleBtn">
           <span>🔵</span>
           Iniciar sesión con Google
         </button>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <p className="authError">{error}</p>}
 
-        <p className={styles.switch}>
+        <p className="authSwitch">
           ¿No tienes cuenta? {" "}
-          <Link to="/register" className={styles.link}>Regístrate aquí</Link>
+          <Link to="/register" className="authLink">Regístrate aquí</Link>
         </p>
       </div>
     </div>

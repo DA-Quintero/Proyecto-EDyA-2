@@ -1,0 +1,1503 @@
+// Importar variables globales
+@import './index.scss';
+
+// MIXINS REUTILIZABLES
+
+@mixin container($max-width: 1280px) {
+  max-width: $max-width;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  @media (min-width: 640px) {
+    padding: 0 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0 2rem;
+  }
+}
+
+@mixin card {
+  background: $bg-white;
+  border-radius: 10px;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-md;
+  transition: all $transition-slow;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+@mixin button-primary {
+  background: $primary;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $primary-dark;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+@mixin button-secondary {
+  background: $bg-gray;
+  color: $text-dark;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: 1px solid $border-light;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $border-light;
+  }
+}
+
+@mixin button-success {
+  background: $success;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $success-dark;
+  }
+}
+
+@mixin button-danger {
+  background: $danger;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $danger-dark;
+  }
+}
+
+@mixin input-base {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color $transition-base, box-shadow $transition-base;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  }
+}
+
+// ESTILOS ESPECÍFICOS DE APP
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+
+  &:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+  }
+
+  &.react:hover {
+    filter: drop-shadow(0 0 2em #61dafbaa);
+  }
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: $text-muted;
+}
+
+// TOAST NOTIFICATIONS
+
+.toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: #323232;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  animation: fadeInOut 2s ease forwards;
+  z-index: 9999;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+  animation: fade 0.3s ease-out;
+}
+
+// AUTH COMPONENTS (Login/Register)
+
+.authWrapper {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  display: grid;
+  place-items: center;
+  background: $bg-gray;
+  padding: 1rem;
+  overflow-x: hidden;
+  
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
+}
+
+.authCard {
+  width: 100%;
+  max-width: 420px;
+  background: $bg-white;
+  border-radius: 12px;
+  box-shadow: $shadow-xl;
+  padding: 2rem;
+}
+
+.authHeader {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.authTitle {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: $text-dark;
+}
+
+.authSubtitle {
+  margin-top: .25rem;
+  color: $text-muted;
+  font-size: .95rem;
+}
+
+.authForm {
+  display: grid;
+  gap: .9rem;
+}
+
+.authFormGroup {
+  display: grid;
+  gap: .4rem;
+}
+
+.authLabel {
+  font-size: .9rem;
+  color: $text-dark;
+}
+
+.authInput {
+  width: 100%;
+  padding: .8rem 1rem;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color $transition-base, box-shadow $transition-base;
+
+  &:focus {
+    border-color: $primary;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+  }
+}
+
+.authPrimaryBtn {
+  width: 100%;
+  background: $primary;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: .9rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background $transition-base, transform $transition-fast;
+
+  &:hover { background: $primary-dark; }
+  &:active { transform: translateY(1px); }
+}
+
+.authGoogleBtn {
+  width: 100%;
+  background: $bg-white;
+  color: $text-primary;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  padding: .85rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  transition: background $transition-base;
+
+  &:hover { background: $bg-gray; }
+}
+
+.authError {
+  color: $danger;
+  text-align: center;
+  font-size: .95rem;
+}
+
+.authSwitch {
+  margin-top: .75rem;
+  text-align: center;
+  color: $text-muted;
+}
+
+.authLink {
+  color: $primary;
+  text-decoration: none;
+  font-weight: 600;
+  &:hover { color: $primary-dark; }
+}
+
+// PROFILE PAGE
+
+.profileContainer {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 1rem;
+  
+  @media (min-width: 768px) {
+    padding: 0 2rem;
+  }
+  
+  @media (min-width: 1024px) {
+    margin-left: 300px;
+    max-width: calc(100% - 320px);
+  }
+}
+
+.profileLeftPanel {
+  display: none; // Oculto en móvil
+  
+  @media (min-width: 1024px) {
+    display: block;
+    width: 250px;
+    background: $bg-light;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid $border-color;
+    position: fixed;
+    left: 1rem;
+    top: 100px;
+    transition: transform $transition-slow, box-shadow $transition-slow;
+    box-shadow: $shadow-md;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 20px rgba(0, 122, 255, 0.35);
+    }
+
+    p {
+      margin: 50px 0;
+      color: $text-light;
+    }
+  }
+}
+
+.profileHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 12px 20px;
+  background: $bg-gray;
+  border-bottom: 1px solid $border-color;
+  box-shadow: $shadow-md;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profileBackBtn {
+  background: $border-color;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: darken($border-color, 10%);
+  }
+}
+
+.profileLogoutBtn {
+  background: $danger;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $danger-dark;
+  }
+}
+
+.profileTitle {
+  margin: 0;
+}
+
+.profileHeaderSpacer {
+  height: 72px;
+}
+
+.profileNavbar {
+  display: flex;
+  justify-content: space-around;
+  background: $bg-white;
+  padding: 12px 0;
+  border-radius: 10px;
+  border: 1px solid $border-color;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 72px;
+  z-index: 100;
+  box-shadow: $shadow-sm;
+}
+
+.profileNavButton {
+  flex: 1;
+  padding: 10px 0;
+  background: white;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background $transition-base;
+}
+
+.profileActiveTab {
+  font-weight: bold;
+  background: #e9f3ff;
+  border-bottom: 3px solid $info;
+}
+
+.profileInfoContent {
+  display: flex;
+  gap: 20px;
+}
+
+.profileFormPanel {
+  width: 100%;
+  background: $bg-white;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid $border-color;
+
+  input {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 0.8rem 1rem;
+    border: 1px solid $border-light;
+    border-radius: 10px;
+    transition: border-color $transition-base;
+
+    &:focus {
+      border-color: $primary;
+    }
+  }
+}
+
+.profileSaveBtn {
+  padding: 10px 18px;
+  background: $info;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $info-dark;
+  }
+}
+
+.profileSectionBox {
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid $border-color;
+}
+
+.profileFavItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: $bg-white;
+  border: 1px solid $border-gray;
+  border-radius: 10px;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+
+  h4 {
+    margin: 0;
+  }
+
+  p {
+    margin: 2px 0 0;
+    color: $text-light;
+  }
+}
+
+.profilePrestamoItem {
+  padding: 15px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background: #f7f7f7;
+  margin-bottom: 12px;
+
+  p {
+    margin: 4px 0;
+  }
+}
+
+.profileEstadoDias {
+  font-weight: bold;
+  margin-left: 6px;
+
+  &::before {
+    content: " ";
+  }
+
+  color: $primary-light;
+
+  &.atrasado {
+    color: #d9534f;
+  }
+}
+
+.profileMultaBox {
+  background: #ffdddd;
+  padding: 8px;
+  border-left: 4px solid red;
+  border-radius: 6px;
+  margin-top: 6px;
+  font-weight: bold;
+  color: #900;
+}
+
+.profileDevueltoTag {
+  color: $success;
+  font-weight: bold;
+  background: $success-light;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.profileDevolverBtn {
+  background: $success;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  border: none;
+  font-weight: 500;
+  transition: background $transition-base, transform $transition-fast;
+
+  &:hover {
+    background: $success-dark;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// CATALOG PAGE
+
+.catalogGridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  padding: 1rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    padding: 0.5rem;
+  }
+}
+
+.catalogHeader {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.5rem;
+}
+
+.catalogH2 {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
+}
+
+.catalogBackBtn {
+  background: $info;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $info-dark;
+  }
+}
+
+.catalogLibroCard {
+  padding: 10px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  background: $bg-light;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+  transition: box-shadow $transition-base, transform $transition-fast;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+.catalogPortada {
+  font-size: 40px;
+}
+
+.catalogTitulo {
+  font-size: 1rem;
+  font-weight: bold;
+  color: $text-dark;
+}
+
+.catalogAutor {
+  color: $text-light;
+}
+
+.catalogGenero {
+  font-size: 0.85rem;
+  color: $text-gray;
+}
+
+.catalogDisponibles {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: $text-dark;
+}
+
+.catalogFavBtn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  transition: background $transition-base;
+}
+
+.catalogFavAdd {
+  background: $info;
+
+  &:hover {
+    background: $info-dark;
+  }
+}
+
+.catalogFavRemove {
+  background: $danger;
+
+  &:hover {
+    background: $danger-dark;
+  }
+}
+
+.catalogPrestamoBtn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: $success;
+  color: white;
+  font-weight: 600;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $success-dark;
+  }
+}
+
+// PRESTAMO PAGE
+
+.prestamoContainer {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: "Inter", sans-serif;
+  
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
+}
+
+.prestamoHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.prestamoBackBtn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: $text-dark;
+  transition: color $transition-base, transform $transition-base;
+
+  &:hover {
+    color: $text-primary;
+    transform: translateX(-3px);
+  }
+}
+
+.prestamoTitle {
+  font-size: 24px;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: $text-primary;
+}
+
+.prestamoBookName {
+  background: $bg-body;
+  padding: 12px 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  border-left: 5px solid $info;
+  color: $text-dark;
+
+  strong {
+    color: $primary-dark;
+  }
+}
+
+.prestamoForm {
+  background: $bg-white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: $shadow-lg;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  label {
+    font-size: 15px;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid $border-light;
+    outline: none;
+    transition: border-color $transition-base, box-shadow $transition-base;
+
+    &:focus {
+      border-color: $info;
+      box-shadow: 0 0 4px rgba(76, 139, 245, 0.4);
+    }
+  }
+
+  textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
+}
+
+.prestamoSubmitBtn {
+  background: $info;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &:hover {
+    background: $info-dark;
+  }
+
+  &:disabled {
+    background: lighten($info, 30%);
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 480px) {
+  .prestamoContainer {
+    padding: 12px;
+  }
+
+  .prestamoForm {
+    padding: 18px;
+  }
+}
+
+.prestamoBoton {
+  background-color: $success;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background $transition-base;
+
+  &:hover {
+    background-color: $success-dark;
+  }
+}
+
+.prestamoBotonPrestado {
+  background-color: darken($success, 15%);
+  color: #c6c6c6;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  font-weight: bold;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.prestamoModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+  z-index: 999;
+}
+
+.prestamoModalBox {
+  background: white;
+  padding: 25px;
+  width: 80%;
+  max-width: 370px;
+  border-radius: 12px;
+  text-align: center;
+  animation: scaleIn 0.3s ease;
+
+  button {
+    margin-top: 15px;
+    padding: 8px 14px;
+    border: none;
+    background: $success;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background $transition-base;
+
+    &:hover {
+      background: $success-dark;
+    }
+  }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+// HOME PAGE
+
+.homeContainer {
+  min-height: 100vh;
+  background: $bg-gray;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.homeHeader {
+  background: $bg-white;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .homeHeaderContent {
+    @include container;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .homeLogo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .homeLogoIcon {
+      font-size: 2rem;
+    }
+
+    .homeLogoText {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $primary;
+    }
+  }
+
+  .homeMenuButton {
+    display: block;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.5rem;
+
+    &:hover {
+      background: $bg-gray;
+    }
+
+    @media (min-width: 768px) {
+      display: none;
+    }
+  }
+
+  .homeNav {
+    display: none;
+    align-items: center;
+    gap: 2rem;
+
+    @media (min-width: 768px) {
+      display: flex;
+    }
+
+    a {
+      color: $text-dark;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color $transition-slow;
+
+      &:hover {
+        color: $primary;
+      }
+    }
+
+    .homeLoginButton {
+      @include button-primary;
+      padding: 0.5rem 1.5rem;
+    }
+  }
+
+  .homeMobileMenu {
+    border-top: 1px solid $border-light;
+    background: $bg-white;
+
+    .homeMobileMenuContent {
+      display: flex;
+      flex-direction: column;
+      padding: 0.5rem 1rem;
+
+      a {
+        padding: 0.75rem 0;
+        color: $text-dark;
+        text-decoration: none;
+        border-bottom: 1px solid $border-light;
+
+        &:hover {
+          color: $primary;
+        }
+      }
+
+      .homeLoginButton {
+        @include button-primary;
+        margin-top: 0.75rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+    }
+
+    @media (min-width: 768px) {
+      display: none;
+    }
+  }
+}
+
+.homeHero {
+  position: relative;
+  background: linear-gradient(to right, #1e3a8a, #1e40af);
+  color: white;
+  overflow: hidden;
+
+  .homeHeroOverlay {
+    position: absolute;
+    inset: 0;
+    background: black;
+    opacity: 0.4;
+  }
+
+  .homeHeroBackground {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+  }
+
+  .homeHeroContent {
+    @include container;
+    position: relative;
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+    text-align: center;
+
+    @media (min-width: 768px) {
+      padding-top: 8rem;
+      padding-bottom: 8rem;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+
+      @media (min-width: 768px) {
+        font-size: 3rem;
+      }
+
+      @media (min-width: 1024px) {
+        font-size: 3.75rem;
+      }
+    }
+
+    p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      color: #e5e7eb;
+
+      @media (min-width: 768px) {
+        font-size: 1.5rem;
+      }
+    }
+
+    .homeHeroButtons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      justify-content: center;
+
+      @media (min-width: 640px) {
+        flex-direction: row;
+      }
+
+      .homeRegisterButton {
+        @include button-primary;
+        background: white;
+        color: $primary;
+        font-size: 1.125rem;
+
+        &:hover {
+          background: $bg-gray;
+        }
+      }
+
+      .homeExploreButton {
+        background: transparent;
+        color: white;
+        padding: 0.75rem 2rem;
+        border: 2px solid white;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all $transition-slow;
+        font-size: 1.125rem;
+
+        &:hover {
+          background: white;
+          color: $primary;
+        }
+      }
+    }
+  }
+}
+
+.homeSection {
+  @include container;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.homeSectionWhite {
+  background: white;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.homeSectionTitle {
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: $text-dark;
+}
+
+.homeServicesGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.homeServiceCard {
+  @include card;
+  padding: 2rem;
+  text-align: center;
+
+  .homeServiceIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: $text-dark;
+  }
+
+  p {
+    color: $text-gray;
+  }
+}
+
+.homeAdditionalServicesGrid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.homeAdditionalServiceCard {
+  background: $bg-gray;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all $transition-slow;
+
+  &:hover {
+    background: #dbeafe;
+  }
+
+  .homeServiceIcon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h5 {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    color: $text-dark;
+  }
+
+  p {
+    font-size: 0.75rem;
+    color: $text-gray;
+  }
+}
+
+.homeCatalogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h3 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: $text-dark;
+  }
+
+  .homeViewAllLink {
+    color: $primary;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      color: $primary-dark;
+    }
+  }
+}
+
+.homeCatalogGrid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.homeBookCard {
+  @include card;
+  padding: 1.5rem;
+
+  .homeBookContent {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+
+    .homeBookCover {
+      background: linear-gradient(to bottom right, $primary-light, $primary-dark);
+      color: white;
+      width: 4rem;
+      height: 5rem;
+      border-radius: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .homeBookInfo {
+      flex: 1;
+
+      h4 {
+        font-weight: 700;
+        font-size: 1.125rem;
+        margin-bottom: 0.25rem;
+        color: $text-dark;
+      }
+
+      .homeBookAuthor {
+        font-size: 0.875rem;
+        color: $text-gray;
+        margin-bottom: 0.25rem;
+      }
+
+      .homeBookGenre {
+        display: inline-block;
+        background: #dbeafe;
+        color: #1e40af;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .homeBookAvailability {
+        font-size: 0.875rem;
+        color: $text-light;
+
+        &.available {
+          color: $success;
+        }
+
+        &.unavailable {
+          color: $danger;
+        }
+      }
+    }
+  }
+}
+
+.homeStats {
+  background: $primary;
+  color: white;
+  padding: 4rem 0;
+
+  .homeStatsGrid {
+    @include container;
+    display: grid;
+    gap: 2rem;
+    text-align: center;
+    grid-template-columns: repeat(2, 1fr);
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .homeStatItem {
+      .homeStatNumber {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .homeStatLabel {
+        color: #bfdbfe;
+      }
+    }
+  }
+}
+
+.homeReviewsGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.homeReviewCard {
+  @include card;
+  overflow: hidden;
+
+  .homeReviewImage {
+    background: linear-gradient(to bottom right, #e5e7eb, #d1d5db);
+    height: 12rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+  }
+
+  .homeReviewContent {
+    padding: 1.5rem;
+
+    h4 {
+      font-weight: 700;
+      font-size: 1.125rem;
+      margin-bottom: 0.75rem;
+      color: $text-dark;
+    }
+
+    .homeReviewStars {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 0.75rem;
+
+      .star {
+        &.filled {
+          color: $warning;
+        }
+
+        &.empty {
+          color: #d1d5db;
+        }
+      }
+    }
+
+    .homeReviewText {
+      font-size: 0.875rem;
+      color: $text-gray;
+      font-style: italic;
+      margin-bottom: 0.75rem;
+    }
+
+    .homeReviewAuthor {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $text-dark;
+    }
+  }
+}
+
+.homeFooter {
+  background: $secondary;
+  color: white;
+  padding: 3rem 0;
+
+  .homeFooterContent {
+    @include container;
+  }
+
+  .homeFooterGrid {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .homeFooterSection {
+      h4 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        color: #9ca3af;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+          margin-bottom: 0.5rem;
+
+          a {
+            color: #9ca3af;
+            text-decoration: none;
+
+            &:hover {
+              color: white;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .homeFooterBottom {
+    border-top: 1px solid #4b5563;
+    padding-top: 2rem;
+    text-align: center;
+    color: #9ca3af;
+  }
+
+  .homeProfileContainer {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .homeProfilePic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    object-fit: cover;
+    transition: $transition-base;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  .homeMobileProfileContainer {
+    display: flex;
+    padding: 10px 0;
+    cursor: pointer;
+  }
+}

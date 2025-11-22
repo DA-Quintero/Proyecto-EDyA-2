@@ -8,9 +8,6 @@ import {
   query,
   where,
   getDocs,
-  addDoc,
-  deleteDoc,
-  orderBy,
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { setUser } from "../../store/slices/authSlice";
@@ -26,8 +23,7 @@ import {
 } from "../utils";
 import { procesarFilaEspera } from "../utils/procesarFilaEspera";
 
-import "../toast.css";
-import styles from "./Profile.module.scss";
+import "../../App.scss";
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -59,7 +55,7 @@ export default function Profile() {
     setTimeout(() => setToast(""), 2000);
   };
 
-  // --- NUEVA FUNCIÓN: Procesar fila FIFO ---
+  // Procesar fila FIFO
   
 
   const devolverLibro = async (prestamoId, libroId) => {
@@ -192,8 +188,6 @@ export default function Profile() {
       const snap = await getDocs(q);
 
       const prestamosBase = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      
-      console.log("Préstamos devueltos encontrados:", prestamosBase);
 
       // Ordenar por fecha de devolución manualmente (más reciente primero)
       const prestamosOrdenados = prestamosBase.sort((a, b) => {
@@ -226,6 +220,7 @@ export default function Profile() {
 
   useEffect(() => {
     cargarHistorial();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
@@ -300,8 +295,8 @@ export default function Profile() {
   if (loading) return <p>Cargando perfil...</p>;
 
   return (
-    <div className={styles.container}>
-      <div className={styles.leftPanel}>
+    <div className="profileContainer">
+      <div className="profileLeftPanel">
         <h3>{user.displayName}</h3>
 
         <p>
@@ -320,27 +315,27 @@ export default function Profile() {
 
       {toast && <div className="toast">{toast}</div>}
 
-      <header className={styles.header}>
-        <button onClick={() => navigate("/")} className={styles.backBtn}>
+      <header className="profileHeader">
+        <button onClick={() => navigate("/")} className="profileBackBtn">
           ⬅ Volver
         </button>
 
-        <h2 className={styles.title}>Mi Perfil</h2>
+        <h2 className="profileTitle">Mi Perfil</h2>
 
-        <button onClick={cerrarSesion} className={styles.logoutBtn}>
+        <button onClick={cerrarSesion} className="profileLogoutBtn">
           Cerrar sesión
         </button>
       </header>
 
-      <div className={styles.headerSpacer} />
+      <div className="profileHeaderSpacer" />
 
-      <nav className={styles.navbar}>
+      <nav className="profileNavbar">
         {["informacion", "prestamos", "historial", "favoritos"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`${styles.navButton} ${
-              activeTab === tab ? styles.activeTab : ""
+            className={`profileNavButton ${
+              activeTab === tab ? "profileActiveTab" : ""
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -349,8 +344,8 @@ export default function Profile() {
       </nav>
 
       {activeTab === "informacion" && (
-        <div className={styles.infoContent}>
-          <div className={styles.formPanel}>
+        <div className="profileInfoContent">
+          <div className="profileFormPanel">
             <label>Email:</label>
             <input type="email" disabled value={form.email} />
 
@@ -373,7 +368,7 @@ export default function Profile() {
             <button
               onClick={saveChanges}
               disabled={saving}
-              className={styles.saveBtn}
+              className="profileSaveBtn"
             >
               {saving ? "Guardando..." : "Guardar cambios"}
             </button>
@@ -382,7 +377,7 @@ export default function Profile() {
       )}
 
      {activeTab === "prestamos" && (
-  <div className={styles.sectionBox}>
+  <div className="profileSectionBox">
     <h3>Préstamos activos</h3>
 
     {prestamosUsuario.map((p) => {
@@ -390,7 +385,7 @@ export default function Profile() {
       const multa = calcularMulta(dias);
 
       return (
-        <div key={p.id} className={styles.prestamoItem}>
+        <div key={p.id} className="profilePrestamoItem">
           <p>
             <strong>Libro:</strong> {p.libroTitulo}
           </p>
@@ -403,13 +398,13 @@ export default function Profile() {
           <p>
             <strong>Fecha devolución:</strong>{" "}
             {formatearFecha(p.fechaDevolucion)}{" "}
-            <span className={styles.estadoDias}>
+            <span className="profileEstadoDias">
               {calcularEstadoDias(p.fechaDevolucion)}
             </span>
           </p>
 
           {dias < 0 && (
-            <p className={styles.multaBox}>
+            <p className="profileMultaBox">
               <strong>Multa:</strong> {formatearPesos(multa)}
             </p>
           )}
@@ -422,7 +417,7 @@ export default function Profile() {
           </p>
 
           <button
-            className={styles.devolverBtn}
+            className="profileDevolverBtn"
             onClick={() => devolverLibro(p.id, p.libroId)}
           >
             Devolver
@@ -435,14 +430,14 @@ export default function Profile() {
 
 
       {activeTab === "historial" && (
-        <div className={styles.sectionBox}>
+        <div className="profileSectionBox">
           <h3>Historial de préstamos</h3>
 
           {historialPrestamos.length === 0 ? (
             <p>No hay préstamos devueltos todavía.</p>
           ) : (
             historialPrestamos.map((p) => (
-              <div key={p.id} className={styles.prestamoItem}>
+              <div key={p.id} className="profilePrestamoItem">
                 <p>
                   <strong>Libro:</strong> {p.libroTitulo}
                 </p>
@@ -458,7 +453,7 @@ export default function Profile() {
                 </p>
 
                 <p>
-                  <strong>Estado:</strong> <span className={styles.devueltoTag}>Devuelto ✓</span>
+                  <strong>Estado:</strong> <span className="profileDevueltoTag">Devuelto ✓</span>
                 </p>
               </div>
             ))
@@ -467,14 +462,14 @@ export default function Profile() {
       )}
 
       {activeTab === "favoritos" && (
-        <div className={styles.sectionBox}>
+        <div className="profileSectionBox">
           <h3>Libros favoritos</h3>
 
           {favoritoLibros.length === 0 ? (
             <p>No hay libros favoritos todavía.</p>
           ) : (
             favoritoLibros.map((libro) => (
-              <div key={libro.id} className={styles.favItem}>
+              <div key={libro.id} className="profileFavItem">
                 <span style={{ fontSize: "2rem" }}>{libro.portada}</span>
                 <div>
                   <h4>{libro.titulo}</h4>

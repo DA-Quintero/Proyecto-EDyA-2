@@ -6,15 +6,13 @@ import {
     doc,
     getDoc,
     updateDoc,
-    query,
-    where,
-    orderBy,
     getDocs,
-    deleteDoc
+    query,
+    where
 } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase/config";
-import styles from "./prestamo.module.scss";
+import "../../App.scss";
 import { procesarFilaEspera } from "../utils/procesarFilaEspera";
 import { onSnapshot } from "firebase/firestore";
 
@@ -31,13 +29,6 @@ export default function Prestamo() {
     const [libro, setLibro] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
-    const [extra, setExtra] = useState({ prestamosActivos: 0 });
-    const [toast, setToast] = useState("");
-
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(""), 2000);
-    };
     useEffect(() => {
         if (!libroId || !user) return;
 
@@ -49,7 +40,9 @@ export default function Prestamo() {
 
             // Si hay stock y usuario está en fila, procesar fila
             if (libroData.disponibles > 0) {
-                procesarFilaEspera(libroId, user, setPrestamosUsuario, setExtra, showToast);
+                procesarFilaEspera(libroId, {
+                    userIdActual: user.uid
+                });
             }
         });
 
@@ -142,7 +135,9 @@ export default function Prestamo() {
 
             setTimeout(async () => {
                 setShowModal(false);
-                await procesarFilaEspera(libroId, user, setPrestamosUsuario, setExtra, showToast);
+                await procesarFilaEspera(libroId, {
+                    userIdActual: user.uid
+                });
                 navigate("/profile");
             }, 2000);
         } catch (error) {
@@ -157,24 +152,24 @@ export default function Prestamo() {
     return (
         <>
             {showModal && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modalBox}>
+                <div className="prestamoModalOverlay">
+                    <div className="prestamoModalBox">
                         <h3>{modalMessage}</h3>
                         <button onClick={() => setShowModal(false)}>Cerrar</button>
                     </div>
                 </div>
             )}
 
-            <div className={styles.container}>
-                <header className={styles.header}>
-                    <button className={styles.backBtn} onClick={() => navigate("/")}>⬅ Volver</button>
+            <div className="prestamoContainer">
+                <header className="prestamoHeader">
+                    <button className="prestamoBackBtn" onClick={() => navigate("/")}>⬅ Volver</button>
                 </header>
 
-                <h2 className={styles.title}>Registrar préstamo</h2>
+                <h2 className="prestamoTitle">Registrar préstamo</h2>
 
-                {libro && <p className={styles.bookName}><strong>Libro:</strong> {libro.titulo}</p>}
+                {libro && <p className="prestamoBookName"><strong>Libro:</strong> {libro.titulo}</p>}
 
-                <form className={styles.form} onSubmit={enviarPrestamo}>
+                <form className="prestamoForm" onSubmit={enviarPrestamo}>
                     <label>Cédula</label>
                     <input name="cedula" value={form.cedula} onChange={onChange} required />
 
@@ -184,7 +179,7 @@ export default function Prestamo() {
                     <label>Observaciones</label>
                     <textarea name="observaciones" value={form.observaciones} onChange={onChange} />
 
-                    <button type="submit" className={yaPrestado ? styles.botonPrestado : styles.boton} disabled={yaPrestado || loading}>
+                    <button type="submit" className={yaPrestado ? "prestamoBotonPrestado" : "prestamoBoton"} disabled={yaPrestado || loading}>
                         {yaPrestado ? "Ya está en préstamo" : "Solicitar préstamo"}
                     </button>
                 </form>

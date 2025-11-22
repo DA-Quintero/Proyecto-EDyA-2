@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../../store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { DoublyLinkedList } from "../doublyLinkedList"
-import styles from "./Catalog.module.scss";
+import "../../App.scss";
 
 export default function Catalog() {
     const user = useSelector((state) => state.auth.user);
@@ -60,35 +60,35 @@ export default function Catalog() {
     if (loading) return <p>Cargando libros...</p>;
 
     return (
-        <div className={styles.gridContainer}>
+        <div className="catalogGridContainer">
 
-            <header className={styles.header}>
-                <button className={styles.backBtn} onClick={() => navigate("/")}>
+            <header className="catalogHeader">
+                <button className="catalogBackBtn" onClick={() => navigate("/")}>
                     ⬅ Volver
                 </button>
-                <h2 className={styles.h2}>Catálogo de Libros</h2>
+                <h2 className="catalogH2">Catálogo de Libros</h2>
             </header>
 
             {libros.toArray().map(libro => {
                 const isFavorite = user?.favoritos?.includes(libro.id);
                 return (
-                    <div key={libro.id} className={styles.libroCard}>
+                    <div key={libro.id} className="catalogLibroCard">
 
-                        <div className={styles.portada}>{libro.portada}</div>
+                        <div className="catalogPortada">{libro.portada}</div>
 
-                        <h4 className={styles.titulo}>{libro.titulo}</h4>
+                        <h4 className="catalogTitulo">{libro.titulo}</h4>
 
-                        <p className={styles.autor}>{libro.autor}</p>
+                        <p className="catalogAutor">{libro.autor}</p>
 
-                        <span className={styles.genero}>{libro.genero}</span>
+                        <span className="catalogGenero">{libro.genero}</span>
 
-                        <p className={styles.disponibles}>{libro.disponibles} disponibles</p>
+                        <p className="catalogDisponibles">{libro.disponibles} disponibles</p>
 
                         {/* Botón favoritos */}
                         <button
                             onClick={() => toggleFavorite(libro.id)}
                             disabled={savingId === libro.id}
-                            className={`${styles.favBtn} ${isFavorite ? styles.favRemove : styles.favAdd}`}
+                            className={`catalogFavBtn ${isFavorite ? "catalogFavRemove" : "catalogFavAdd"}`}
                         >
                             {savingId === libro.id
                                 ? "Guardando..."
@@ -100,7 +100,7 @@ export default function Catalog() {
                         {/* Botón préstamo */}
                         <button
                             onClick={() => navigate("/prestamo", { state: { libroId: libro.id } })}
-                            className={styles.prestamoBtn}
+                            className="catalogPrestamoBtn"
                         >
                             Pedir préstamo
                         </button>

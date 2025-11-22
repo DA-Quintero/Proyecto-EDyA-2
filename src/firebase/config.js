@@ -1,8 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getDatabase } from "firebase/database";
-import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD8O2cSSwPH0gXkZdpxf_tgDRckPRt_1Is",
@@ -15,16 +13,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
-// 🔹 Cambia esta línea:
-const auth = getAuth(app); // <--- importante
-
+const auth = getAuth(app);
 const db = getFirestore(app);
-const rtdb = getDatabase(app);
 
-let analytics;
-if (typeof window !== "undefined" && typeof navigator !== "undefined") {
-  analytics = getAnalytics(app);
-}
-
-export { app, analytics, auth, db, rtdb };
+export { app, auth, db };
