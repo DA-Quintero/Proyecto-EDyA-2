@@ -6,7 +6,7 @@ import { setUser } from "../../store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { DoublyLinkedList } from "../doublyLinkedList";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookOpen, faHeart, faHeartCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpen, faHeart, faHeartCircleCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 import "../../App.scss";
 
 export default function Catalog() {
@@ -99,7 +99,7 @@ export default function Catalog() {
                     <h2 className="catalogTitle">Catálogo Completo</h2>
                 </div>
                 <button className="catalogProfileBtn" onClick={() => navigate("/profile")}>
-                    Cerrar sesión
+                    <FontAwesomeIcon icon={faUser} />
                 </button>
             </header>
 
