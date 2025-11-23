@@ -14,18 +14,81 @@ const Register = () => {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [localError, setLocalError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [nameError, setNameError] = useState("");
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    setDisplayName(value);
+    if (value && value.length < 3) {
+      setNameError("El nombre debe tener al menos 3 caracteres");
+    } else {
+      setNameError("");
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (value && !validateEmail(value)) {
+      setEmailError("Por favor ingresa un correo válido");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (value && value.length < 6) {
+      setPasswordError("La contraseña debe tener al menos 6 caracteres");
+    } else {
+      setPasswordError("");
+    }
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setLocalError("");
 
-  const res = await dispatch(registerAuth({ email, password, displayName }));
+    // Validaciones antes de enviar
+    if (displayName.length < 3) {
+      setLocalError("El nombre debe tener al menos 3 caracteres");
+      return;
+    }
 
-  if (res.meta?.requestStatus === "fulfilled") {
-    navigate("/dashboard");
-  } else {
-    alert("Hubo un error al registrarte. Intenta nuevamente.");
-  }
-};
+    if (!validateEmail(email)) {
+      setLocalError("Por favor ingresa un correo válido");
+      return;
+    }
+
+    if (password.length < 6) {
+      setLocalError("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
+    const res = await dispatch(registerAuth({ email, password, displayName }));
+
+    if (res.meta?.requestStatus === "fulfilled") {
+      navigate("/home");
+    } else {
+      // Manejar errores específicos de Firebase
+      if (res.error?.message?.includes("auth/email-already-in-use")) {
+        setLocalError("Este correo ya está registrado. Intenta iniciar sesión.");
+      } else if (res.error?.message?.includes("email-already-in-use")) {
+        setLocalError("Este correo ya está registrado. Intenta iniciar sesión.");
+      } else {
+        setLocalError(res.error?.message || "Hubo un error al registrarte. Intenta nuevamente.");
+      }
+    }
+  };
 
 
   return (
@@ -51,10 +114,11 @@ const Register = () => {
               type="text"
               className="authInput"
               value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
+              onChange={handleNameChange}
               placeholder="Tu nombre"
               required
             />
+            {nameError && <small style={{ color: '#ff3b30', fontSize: '0.85rem', marginTop: '0.25rem' }}>{nameError}</small>}
           </div>
 
           <div className="authFormGroup">
@@ -64,10 +128,11 @@ const Register = () => {
               type="email"
               className="authInput"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               placeholder="tu@correo.com"
               required
             />
+            {emailError && <small style={{ color: '#ff3b30', fontSize: '0.85rem', marginTop: '0.25rem' }}>{emailError}</small>}
           </div>
 
           <div className="authFormGroup">
@@ -77,10 +142,11 @@ const Register = () => {
               type="password"
               className="authInput"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               placeholder="••••••••"
               required
             />
+            {passwordError && <small style={{ color: '#ff3b30', fontSize: '0.85rem', marginTop: '0.25rem' }}>{passwordError}</small>}
           </div>
 
           <button type="submit" disabled={loading} className="authPrimaryBtn">
@@ -88,7 +154,7 @@ const Register = () => {
           </button>
         </form>
 
-        {error && <p className="authError">{error}</p>}
+        {(error || localError) && <p className="authError">{localError || error}</p>}
 
         <p className="authSwitch">
           ¿Ya tienes cuenta? {" "}

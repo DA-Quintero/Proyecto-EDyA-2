@@ -15,22 +15,61 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (value && !validateEmail(value)) {
+      setEmailError("Por favor ingresa un correo válido");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (value && value.length < 6) {
+      setPasswordError("La contraseña debe tener al menos 6 caracteres");
+    } else {
+      setPasswordError("");
+    }
+  };
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
+    setError("");
+
+    // Validaciones antes de enviar
+    if (!validateEmail(email)) {
+      setError("Por favor ingresa un correo válido");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
     const result = await dispatch(loginWithEmailAndPassword(email, password));
     if (result.success) {
-      navigate("/dashboard");
+      navigate("/home");
     } else {
       setError(result.message || "Error al iniciar sesión");
     }
-
   };
 
  const handleGoogleLogin = async () => {
     const result = await dispatch(loginWithGoogle());
     if (result.success) {
-      navigate("/profile");
+      navigate("/home");
     } else {
       setError(result.message || "Error al iniciar con Google");
     }
@@ -60,9 +99,10 @@ const Login = () => {
               type="email"
               placeholder="tu@correo.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
             />
+            {emailError && <small style={{ color: '#ff3b30', fontSize: '0.85rem', marginTop: '0.25rem' }}>{emailError}</small>}
           </div>
 
           <div className="authFormGroup">
@@ -73,9 +113,10 @@ const Login = () => {
               type="password"
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               required
             />
+            {passwordError && <small style={{ color: '#ff3b30', fontSize: '0.85rem', marginTop: '0.25rem' }}>{passwordError}</small>}
           </div>
 
           <button type="submit" className="authPrimaryBtn">Iniciar sesión</button>

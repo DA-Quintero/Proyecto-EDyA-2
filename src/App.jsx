@@ -37,8 +37,11 @@ const App = () => {
 
   return (
     <Routes>
+      {/* Redirigir al login */}
+      <Route path="/" element={user ? <Navigate to="/home" /> : <Navigate to="/login" />} />
+
       {/* Home pública */}
-      <Route path="/" element={<Home />} />
+      <Route path="/home" element={<Home />} />
 
       <Route path="/catalog" element={<Catalog />} />
 
@@ -48,13 +51,13 @@ const App = () => {
       {/* Login */}
       <Route
         path="/login"
-        element={user ? <Navigate to="/profile" /> : <Login />}
+        element={user ? <Navigate to="/home" /> : <Login />}
       />
 
       {/* Registro */}
       <Route
         path="/register"
-        element={user ? <Navigate to="/profile" /> : <Register />}
+        element={user ? <Navigate to="/home" /> : <Register />}
       />
 
       {/* Dashboard protegido */}
@@ -64,7 +67,7 @@ const App = () => {
       />
 
       {/* Ruta por defecto */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
 };

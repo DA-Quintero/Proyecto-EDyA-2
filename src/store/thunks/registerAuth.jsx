@@ -36,7 +36,16 @@ export const registerAuth = createAsyncThunk(
       };
     } catch (err) {
       console.error("Error en el registro:", err.code, err.message);
-      return rejectWithValue(err.message);
+      // Manejar errores específicos de Firebase
+      let errorMessage = err.message;
+      if (err.code === "auth/email-already-in-use") {
+        errorMessage = "Este correo ya está registrado. Intenta iniciar sesión.";
+      } else if (err.code === "auth/invalid-email") {
+        errorMessage = "El correo electrónico no es válido.";
+      } else if (err.code === "auth/weak-password") {
+        errorMessage = "La contraseña es muy débil. Debe tener al menos 6 caracteres.";
+      }
+      return rejectWithValue(errorMessage);
     }
   }
 );

@@ -14,7 +14,7 @@ import { setUser } from "../../store/slices/authSlice";
 import { logoutAuth } from "../../store/thunks/logoutAuth";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faHeart, faHeartCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faHeart, faHeartCircleCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import {
   calcularEstadoDias,
@@ -376,11 +376,9 @@ export default function Profile() {
         <div className="profileLeftCard">
           <div className="profileAvatarSection">
             <div className="profileAvatarWrapper">
-              <img 
-                src={user.photoURL || "https://via.placeholder.com/150"} 
-                alt="Profile" 
-                className="profileAvatar"
-              />
+              <div className="profileAvatarIcon">
+                <FontAwesomeIcon icon={faUser} />
+              </div>
             </div>
             <h3 className="profileUserName">{user.displayName}</h3>
             <p className="profileMemberSince">

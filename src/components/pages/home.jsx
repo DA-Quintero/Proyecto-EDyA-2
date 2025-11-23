@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import MapaSedes from "./MapaSedes";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
-import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpen, faUser } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function Home() {
@@ -169,11 +169,7 @@ export default function Home() {
             <a href="#contacto">Contacto</a>
             {user ? (
               <div className="homeProfileContainer" onClick={() => navigate("/profile")}>
-                <img 
-                  src={user.photoURL || "https://via.placeholder.com/40"} 
-                  alt="Profile" 
-                  className="homeProfilePic" 
-                />
+                <FontAwesomeIcon icon={faUser} className="homeProfileIcon" />
               </div>
             ) : (
               <button className="homeLoginButton" onClick={() => navigate("/login")}>
@@ -194,11 +190,7 @@ export default function Home() {
               <a href="#contacto" onClick={() => setMenuAbierto(false)}>Contacto</a>
               {user ? (
                 <div className="homeMobileProfileContainer" onClick={() => navigate("/profile")}>
-                  <img 
-                    src={user.photoURL || "https://via.placeholder.com/40"} 
-                    alt="Profile" 
-                    className="homeProfilePic" 
-                  />
+                  <FontAwesomeIcon icon={faUser} className="homeProfileIcon" />
                   <span>Mi perfil</span>
                 </div>
               ) : (
