@@ -94,19 +94,19 @@ export default function Home() {
     },
     {
       id: 3,
-      nombre: "Sede Central",
-      direccion: "Av. Principal 123, Centro",
-      telefono: "(555) 123-4567",
-      horario: "Lun-Vie: 8:00-20:00, Sáb-Dom: 9:00-18:00",
-      servicios: ["Préstamo", "Sala infantil", "Auditorio", "WiFi"]
+      nombre: "Sede Sur",
+      direccion: "Carrera 8 #789, Zona Sur",
+      telefono: "(555) 123-4569",
+      horario: "Lun-Vie: 9:00-18:00, Sáb: 10:00-16:00",
+      servicios: ["Préstamo", "WiFi", "Sala infantil"]
     },
     {
       id: 4,
-      nombre: "Sede Central",
-      direccion: "Av. Principal 123, Centro",
-      telefono: "(555) 123-4567",
-      horario: "Lun-Vie: 8:00-20:00, Sáb-Dom: 9:00-18:00",
-      servicios: ["Préstamo", "Sala infantil", "Auditorio", "WiFi"]
+      nombre: "Sede Este",
+      direccion: "Calle 15 #321, Zona Este",
+      telefono: "(555) 123-4570",
+      horario: "Lun-Vie: 8:00-19:00, Sáb: 9:00-17:00",
+      servicios: ["Préstamo", "Sala de estudio", "Auditorio", "WiFi"]
     }
   ];
 
