@@ -45,7 +45,6 @@ $transition-fast: 0.15s ease;
 $transition-base: 0.2s ease;
 $transition-slow: 0.3s ease;
 
-// RESET Y ESTILOS BASE
 
 * {
   margin: 0;
@@ -54,7 +53,7 @@ $transition-slow: 0.3s ease;
 }
 
 :root {
-  font-family: system-ui, 'Inter', Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -93,11 +92,13 @@ h1 {
   line-height: 1.1;
   margin: 0;
   color: $text-primary;
+  font-weight: 700;
 }
 
 h2, h3, h4, h5, h6 {
   margin: 0;
   color: $text-dark;
+  font-weight: 600;
 }
 
 p {
@@ -128,7 +129,7 @@ button {
   border: none;
   padding: 0.6em 1.2em;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
   transition: background $transition-base, transform $transition-fast;

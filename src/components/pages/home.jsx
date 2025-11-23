@@ -2,91 +2,145 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
 import "../../App.scss";
 import { useSelector } from "react-redux";
+import MapaSedes from "./MapaSedes";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function Home() {
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [mapaAbierto, setMapaAbierto] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
-  const getShortName = () => {
-    if (!user?.displayName) return "";
 
-    const parts = user.displayName.split(" ");
-    const firstName = parts[0];
-    const lastInitial = parts[1] ? parts[1].charAt(0).toUpperCase() : "";
-
-    return `${firstName} ${lastInitial}`;
-  };
-
-
-
-  // Servicios principales
-  const serviciosPrincipales = [
+  // Servicios
+  const servicios = [
     {
       id: 1,
-      icono: "📚",
-      titulo: "Amplio Catálogo",
-      descripcion: "Más de 10,000 libros disponibles en diferentes géneros y categorías"
+      icono: <FontAwesomeIcon icon={faBookOpen} />,
+      titulo: "Préstamo de libros",
+      descripcion: "Más de 50000 títulos disponibles para préstamo gratuito"
     },
     {
       id: 2,
-      icono: "🔍",
-      titulo: "Búsqueda Avanzada",
-      descripcion: "Encuentra fácilmente el libro que buscas con nuestro sistema de búsqueda"
+      icono: "📡",
+      titulo: "WiFi gratuito",
+      descripcion: "Acceso a internet de alta velocidad en todas nuestras sedes"
     },
     {
       id: 3,
-      icono: "📖",
-      titulo: "Préstamos Digitales",
-      descripcion: "Accede a libros electrónicos desde cualquier dispositivo"
+      icono: "👥",
+      titulo: "Salas de estudio",
+      descripcion: "Espacios colaborativos e individuales para estudiar"
+    },
+    {
+      id: 4,
+      icono: "📅",
+      titulo: "Eventos culturales",
+      descripcion: "Talleres, conferencias y actividades para toda la familia"
+    },
+    {
+      id: 5,
+      icono: "💻",
+      titulo: "Recursos digitales",
+      descripcion: "E-books, audiolibros y bases de datos especializadas"
+    },
+    {
+      id: 6,
+      icono: "🎓",
+      titulo: "Soporte académico",
+      descripcion: "Asesoría para investigación y trabajos académicos"
     }
   ];
 
-  // Servicios adicionales
-  const serviciosAdicionales = [
-    { id: 1, icono: "📱", titulo: "Reserva Online", descripcion: "Reserva tus libros desde casa" },
-    { id: 2, icono: "🕐", titulo: "Horario Extendido", descripcion: "Abierto de 8am a 8pm" },
-    { id: 3, icono: "👥", titulo: "Sala de Estudio", descripcion: "Espacios tranquilos para leer" },
-    { id: 4, icono: "🎧", titulo: "Audiolibros", descripcion: "Escucha mientras viajas" },
-    { id: 5, icono: "📰", titulo: "Revistas y Diarios", descripcion: "Publicaciones actualizadas" },
-    { id: 6, icono: "💻", titulo: "Computadoras", descripcion: "Acceso gratuito a internet" }
-  ];
-
   // Catálogo destacado
-  const librosDestacados = [
-    { id: 1, titulo: "Cien años de soledad", autor: "Gabriel García Márquez", genero: "Ficción", disponibles: 3 },
-    { id: 2, titulo: "1984", autor: "George Orwell", genero: "Distopía", disponibles: 5 },
-    { id: 3, titulo: "El principito", autor: "Antoine de Saint-Exupéry", genero: "Infantil", disponibles: 8 },
-    { id: 4, titulo: "Don Quijote", autor: "Miguel de Cervantes", genero: "Clásico", disponibles: 2 },
-    { id: 5, titulo: "Orgullo y Prejuicio", autor: "Jane Austen", genero: "Romance", disponibles: 4 },
-    { id: 6, titulo: "El Hobbit", autor: "J.R.R. Tolkien", genero: "Fantasía", disponibles: 6 }
+  const catalogoNovedades = [
+    { id: 1, titulo: "El código de la vida", autor: "Walter Isaacson", emoji: "📘", badge: "Disponible" },
+    { id: 2, titulo: "Historia del tiempo", autor: "George Ruiz", emoji: "⏰", badge: "Disponible" },
+    { id: 3, titulo: "Arte y ciencia", autor: "Ana Martínez", emoji: "🎨", badge: "Disponible" }
   ];
 
-  // Reseñas recientes
-  const resenasRecientes = [
+  const catalogoPopulares = [
+    { id: 1, titulo: "Cien años de soledad", autor: "Gabriel García Márquez", emoji: "📗", badge: "Disponible" },
+    { id: 2, titulo: "Don Quijote", autor: "Miguel de Cervantes", emoji: "📕", badge: "Disponible" },
+    { id: 3, titulo: "La sombra del viento", autor: "Carlos Ruiz Zafón", emoji: "🌬️", badge: "Disponible" }
+  ];
+
+  const catalogoInfantil = [
+    { id: 1, titulo: "El principito", autor: "Antoine de Saint-Exupéry", emoji: "👑", badge: "Disponible" },
+    { id: 2, titulo: "Harry Potter", autor: "J.K. Rowling", emoji: "⚡", badge: "Disponible" },
+    { id: 3, titulo: "Matilda", autor: "Roald Dahl", emoji: "📚", badge: "Disponible" }
+  ];
+
+  // Sedes
+  const sedes = [
     {
       id: 1,
-      libro: "El código Da Vinci",
-      usuario: "María García",
-      comentario: "Un libro fascinante que te mantiene en suspenso hasta el final. Altamente recomendado.",
-      calificacion: 5,
-      imagen: "📕"
+      nombre: "Sede Central",
+      badge: "Principal",
+      direccion: "Av. Principal 123, Centro",
+      telefono: "(555) 123-4567",
+      horario: "Lun-Vie: 8:00-20:00, Sáb-Dom: 9:00-18:00",
+      servicios: ["Préstamo", "Sala infantil", "Auditorio", "WiFi"]
     },
     {
       id: 2,
-      libro: "Sapiens",
-      usuario: "Juan Pérez",
-      comentario: "Una perspectiva única sobre la historia de la humanidad. Muy revelador y bien escrito.",
-      calificacion: 5,
-      imagen: "📗"
+      nombre: "Sede Norte",
+      direccion: "Calle del Sol 456, Zona Norte",
+      telefono: "(555) 123-4568",
+      horario: "Lun-Vie: 9:00-18:00, Sáb: 10:00-16:00",
+      servicios: ["Préstamo", "Sala de estudio", "WiFi"]
     },
     {
       id: 3,
-      libro: "El alquimista",
-      usuario: "Ana López",
-      comentario: "Inspirador y lleno de sabiduría. Un libro que todos deberían leer al menos una vez.",
-      calificacion: 4,
-      imagen: "📘"
+      nombre: "Sede Central",
+      direccion: "Av. Principal 123, Centro",
+      telefono: "(555) 123-4567",
+      horario: "Lun-Vie: 8:00-20:00, Sáb-Dom: 9:00-18:00",
+      servicios: ["Préstamo", "Sala infantil", "Auditorio", "WiFi"]
+    },
+    {
+      id: 4,
+      nombre: "Sede Central",
+      direccion: "Av. Principal 123, Centro",
+      telefono: "(555) 123-4567",
+      horario: "Lun-Vie: 8:00-20:00, Sáb-Dom: 9:00-18:00",
+      servicios: ["Préstamo", "Sala infantil", "Auditorio", "WiFi"]
+    }
+  ];
+
+  // Eventos
+  const eventos = [
+    {
+      id: 1,
+      titulo: "Club de lectura: Clásicos latinoamericanos",
+      imagen: "📖",
+      categoria: "Para todos",
+      fecha: "15 de noviembre, 2025",
+      hora: "18:00 - 20:00",
+      lugar: "Sede Central - Sala de eventos",
+      capacidad: "Cupo: 20 personas"
+    },
+    {
+      id: 2,
+      titulo: "Taller de escritura creativa",
+      imagen: "✍️",
+      categoria: "Talleres",
+      fecha: "18 de noviembre, 2025",
+      hora: "16:00 - 18:00",
+      lugar: "Sede Norte - Auditorio",
+      capacidad: "Cupo: 15 personas"
+    },
+    {
+      id: 3,
+      titulo: "Taller de escritura creativa",
+      imagen: "🎨",
+      categoria: "Infantil",
+      fecha: "20 de noviembre, 2025",
+      hora: "11:00 - 13:00",
+      lugar: "Sede Sur - Sala infantil",
+      capacidad: "Cupo: 25 personas"
     }
   ];
 
@@ -96,8 +150,8 @@ export default function Home() {
       <header className="homeHeader">
         <div className="homeHeaderContent">
           <div className="homeLogo">
-            <span className="homeLogoIcon">📚</span>
-            <h1 className="homeLogoText">BiblioTech</h1>
+            <span className="homeLogoIcon"><FontAwesomeIcon icon={faBookOpen} /></span>
+            <h1 className="homeLogoText">Librería Municipal</h1>
           </div>
 
           <button
@@ -109,20 +163,23 @@ export default function Home() {
 
           <nav className="homeNav">
             <a href="#inicio">Inicio</a>
-            <a href="#servicios">Servicios</a>
             <a href="#catalogo">Catálogo</a>
+            <a href="#sedes">Sedes</a>
+            <a href="#eventos">Eventos</a>
             <a href="#contacto">Contacto</a>
             {user ? (
-              <button
-                onClick={() => navigate("/profile")}
-                className="profile-button"
-              >
-                {getShortName()}
-              </button>
+              <div className="homeProfileContainer" onClick={() => navigate("/profile")}>
+                <img 
+                  src={user.photoURL || "https://via.placeholder.com/40"} 
+                  alt="Profile" 
+                  className="homeProfilePic" 
+                />
+              </div>
             ) : (
-              <button onClick={() => navigate("/login")}>Iniciar Sesión</button>
+              <button className="homeLoginButton" onClick={() => navigate("/login")}>
+                Cerrar sesión
+              </button>
             )}
-
           </nav>
         </div>
 
@@ -130,19 +187,24 @@ export default function Home() {
         {menuAbierto && (
           <nav className="homeMobileMenu">
             <div className="homeMobileMenuContent">
-              <a href="#inicio">Inicio</a>
-              <a href="#servicios">Servicios</a>
-              <a href="#catalogo">Catálogo</a>
-              <a href="#contacto">Contacto</a>
+              <a href="#inicio" onClick={() => setMenuAbierto(false)}>Inicio</a>
+              <a href="#catalogo" onClick={() => setMenuAbierto(false)}>Catálogo</a>
+              <a href="#sedes" onClick={() => setMenuAbierto(false)}>Sedes</a>
+              <a href="#eventos" onClick={() => setMenuAbierto(false)}>Eventos</a>
+              <a href="#contacto" onClick={() => setMenuAbierto(false)}>Contacto</a>
               {user ? (
-                <button
-                  onClick={() => navigate("/profile")}
-                  className="profile-button"
-                >
-                  {getShortName()}
-                </button>
+                <div className="homeMobileProfileContainer" onClick={() => navigate("/profile")}>
+                  <img 
+                    src={user.photoURL || "https://via.placeholder.com/40"} 
+                    alt="Profile" 
+                    className="homeProfilePic" 
+                  />
+                  <span>Mi perfil</span>
+                </div>
               ) : (
-                <button onClick={() => navigate("/login")}>Iniciar Sesión</button>
+                <button className="homeLoginButton" onClick={() => navigate("/login")}>
+                  Cerrar sesión
+                </button>
               )}
             </div>
           </nav>
@@ -154,24 +216,35 @@ export default function Home() {
         <div className="homeHeroOverlay"></div>
         <div className="homeHeroBackground"></div>
         <div className="homeHeroContent">
-          <h2>Bienvenido a BiblioTech</h2>
-          <p>Tu puerta al conocimiento infinito</p>
+          <h2>Descubre un mundo de conocimiento en tu ciudad</h2>
+          <p>Accede a más de libros, recursos digitales y espacios de estudio en nuestras 5 sedes. ¡Obtén tu credencial de biblioteca y comienza hoy!</p>
           <div className="homeHeroButtons">
-            <Link to="/register" className="homeRegisterButton">
-              Registrarse
-            </Link>
-            <a href="#catalogo" className="homeExploreButton">
-              Explorar Catálogo
-            </a>
+            <button 
+              className="homeRegisterButton"
+              onClick={() => {
+                document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              <FontAwesomeIcon icon={faBookOpen} /> Explorar catálogo
+            </button>
+            <button 
+              className="homeExploreButton" 
+              onClick={() => {
+                document.getElementById('sedes')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              📍 Ver sedes
+            </button>
           </div>
         </div>
       </section>
 
-      {/* Servicios Principales */}
-      <section className="homeSection">
-        <h3 className="homeSectionTitle">Nuestros Servicios</h3>
+      {/* Servicios */}
+      <section id="servicios" className="homeSection">
+        <h3 className="homeSectionTitle">Nuestros servicios</h3>
+        <p className="homeSectionSubtitle">Ofrecemos una amplia gama de servicios diseñados para apoyar tu aprendizaje y desarrollo personal</p>
         <div className="homeServicesGrid">
-          {serviciosPrincipales.map((servicio) => (
+          {servicios.map((servicio) => (
             <div key={servicio.id} className="homeServiceCard">
               <div className="homeServiceIcon">{servicio.icono}</div>
               <h4>{servicio.titulo}</h4>
@@ -181,92 +254,125 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Servicios Adicionales */}
-      <section id="servicios" className="homeSectionWhite">
+      {/* Catálogo Destacado */}
+      <section id="catalogo" className="homeSectionWhite">
         <div className="homeSection">
-          <h3 className="homeSectionTitle">Servicios Adicionales</h3>
-          <div className="homeAdditionalServicesGrid">
-            {serviciosAdicionales.map((servicio) => (
-              <div key={servicio.id} className="homeAdditionalServiceCard">
-                <div className="homeServiceIcon">{servicio.icono}</div>
-                <h5>{servicio.titulo}</h5>
-                <p>{servicio.descripcion}</p>
+          <h3 className="homeSectionTitle">Catálogo destacado</h3>
+          <p className="homeSectionSubtitle">Descubre nuestras últimas adquisiciones y los títulos más solicitados</p>
+          
+          <div className="homeCatalogoContainer">
+            {/* Novedades */}
+            <div className="homeCatalogoCategoria">
+              <div className="homeCatalogHeader">
+                <h4>Novedades</h4>
+              </div>
+              <div className="homeCatalogoLista">
+                {catalogoNovedades.map((libro) => (
+                  <div key={libro.id} className="homeCatalogoItem">
+                    <div className="homeCatalogoEmoji">{libro.emoji}</div>
+                    <div className="homeCatalogoInfo">
+                      <h5>{libro.titulo}</h5>
+                      <p className="homeCatalogoAutor">{libro.autor}</p>
+                      <span className="homeCatalogoBadge">{libro.badge}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Más populares */}
+            <div className="homeCatalogoCategoria">
+              <div className="homeCatalogHeader">
+                <h4>Más populares</h4>
+              </div>
+              <div className="homeCatalogoLista">
+                {catalogoPopulares.map((libro) => (
+                  <div key={libro.id} className="homeCatalogoItem">
+                    <div className="homeCatalogoEmoji">{libro.emoji}</div>
+                    <div className="homeCatalogoInfo">
+                      <h5>{libro.titulo}</h5>
+                      <p className="homeCatalogoAutor">{libro.autor}</p>
+                      <span className="homeCatalogoBadge">{libro.badge}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Literatura infantil */}
+            <div className="homeCatalogoCategoria">
+              <div className="homeCatalogHeader">
+                <h4>Literatura infantil</h4>
+              </div>
+              <div className="homeCatalogoLista">
+                {catalogoInfantil.map((libro) => (
+                  <div key={libro.id} className="homeCatalogoItem">
+                    <div className="homeCatalogoEmoji">{libro.emoji}</div>
+                    <div className="homeCatalogoInfo">
+                      <h5>{libro.titulo}</h5>
+                      <p className="homeCatalogoAutor">{libro.autor}</p>
+                      <span className="homeCatalogoBadge">{libro.badge}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="homeVerCatalogoBtn">
+            <Link to="/catalog">Ver catálogo completo</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Sedes */}
+      <section id="sedes" className="homeSection">
+        <h3 className="homeSectionTitle">Nuestras sedes</h3>
+        <p className="homeSectionSubtitle">4 sedes estratégicamente ubicadas en toda la ciudad para estar siempre cerca de ti</p>
+        <div className="homeSedesGrid">
+          {sedes.map((sede) => (
+            <div key={sede.id} className="homeSedeCard">
+              {sede.badge && <span className="homeSedeBadge">{sede.badge}</span>}
+              <h4>{sede.nombre}</h4>
+              <p className="homeSedeInfo">📍 {sede.direccion}</p>
+              <p className="homeSedeInfo">📞 {sede.telefono}</p>
+              <p className="homeSedeInfo">🕒 {sede.horario}</p>
+              <div className="homeSedeServicios">
+                <strong>Servicios:</strong>
+                <div className="homeSedeServiciosList">
+                  {sede.servicios.map((servicio, idx) => (
+                    <span key={idx} className="homeSedeServicioTag">{servicio}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="homeVerSedesBtn">
+          <button onClick={() => setMapaAbierto(true)}>Ver mapa</button>
+        </div>
+      </section>
+
+      {/* Eventos */}
+      <section id="eventos" className="homeSectionWhite">
+        <div className="homeSection">
+          <h3 className="homeSectionTitle">Próximos eventos</h3>
+          <p className="homeSectionSubtitle">Participa en nuestras actividades culturales y educativas gratuitas</p>
+          <div className="homeEventosGrid">
+            {eventos.map((evento) => (
+              <div key={evento.id} className="homeEventoCard">
+                <div className="homeEventoImagen">{evento.imagen}</div>
+                <div className="homeEventoContent">
+                  <span className="homeEventoCategoria">{evento.categoria}</span>
+                  <h4>{evento.titulo}</h4>
+                  <p className="homeEventoDetalle">📅 {evento.fecha}</p>
+                  <p className="homeEventoDetalle">🕒 {evento.hora}</p>
+                  <p className="homeEventoDetalle">📍 {evento.lugar}</p>
+                  <p className="homeEventoDetalle">👥 {evento.capacidad}</p>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Catálogo Destacado */}
-      <section id="catalogo" className="homeSection">
-        <div className="homeCatalogHeader">
-          <h3>Catálogo Destacado</h3>
-          <Link to="/catalog" className="homeViewAllLink">
-            Ver todo →
-          </Link>
-        </div>
-        <div className="homeCatalogGrid">
-          {librosDestacados.map((libro) => (
-            <div key={libro.id} className="homeBookCard">
-              <div className="homeBookContent">
-                <div className="homeBookCover">📖</div>
-                <div className="homeBookInfo">
-                  <h4>{libro.titulo}</h4>
-                  <p className="homeBookAuthor">{libro.autor}</p>
-                  <span className="homeBookGenre">{libro.genero}</span>
-                  <p className={`homeBookAvailability ${libro.disponibles > 0 ? "homeAvailable" : "homeUnavailable"}`}>
-                    {libro.disponibles} disponibles
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Estadísticas */}
-      <section className="homeStats">
-        <div className="homeStatsGrid">
-          <div className="homeStatItem">
-            <div className="homeStatNumber">10,000+</div>
-            <div className="homeStatLabel">Libros</div>
-          </div>
-          <div className="homeStatItem">
-            <div className="homeStatNumber">5,000+</div>
-            <div className="homeStatLabel">Usuarios</div>
-          </div>
-          <div className="homeStatItem">
-            <div className="homeStatNumber">50+</div>
-            <div className="homeStatLabel">Categorías</div>
-          </div>
-          <div className="homeStatItem">
-            <div className="homeStatNumber">24/7</div>
-            <div className="homeStatLabel">Acceso Digital</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Reseñas Recientes */}
-      <section className="homeSection">
-        <h3 className="homeSectionTitle">Reseñas Recientes</h3>
-        <div className="homeReviewsGrid">
-          {resenasRecientes.map((resena) => (
-            <div key={resena.id} className="homeReviewCard">
-              <div className="homeReviewImage">{resena.imagen}</div>
-              <div className="homeReviewContent">
-                <h4>{resena.libro}</h4>
-                <div className="homeReviewStars">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className={i < resena.calificacion ? "homeFilled" : "homeEmpty"}>
-                      ⭐
-                    </span>
-                  ))}
-                </div>
-                <p className="homeReviewText">"{resena.comentario}"</p>
-                <p className="homeReviewAuthor">- {resena.usuario}</p>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -275,32 +381,49 @@ export default function Home() {
         <div className="homeFooterContent">
           <div className="homeFooterGrid">
             <div className="homeFooterSection">
-              <h4>BiblioTech</h4>
-              <p>Tu biblioteca digital del futuro</p>
+              <div className="homeFooterLogo">
+                <span><FontAwesomeIcon icon={faBookOpen} /></span>
+                <h4>Librería Municipal</h4>
+              </div>
+              <p>Fomentando la lectura y el conocimiento en nuestra ciudad</p>
+              <div className="homeFooterSocial">
+                <a href="#" aria-label="Facebook">
+                  <FontAwesomeIcon icon={faFacebook} />
+                </a>
+                <a href="#" aria-label="Instagram">
+                  <FontAwesomeIcon icon={faInstagram} />
+                </a>
+                <a href="#" aria-label="Twitter">
+                  <FontAwesomeIcon icon={faTwitter} />
+                </a>
+              </div>
             </div>
             <div className="homeFooterSection">
-              <h4>Enlaces Rápidos</h4>
+              <h4>Enlaces rápidos</h4>
               <ul>
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#servicios">Servicios</a></li>
                 <li><a href="#catalogo">Catálogo</a></li>
-                <li><Link to="/login">Iniciar Sesión</Link></li>
+                <li><a href="#sedes">Nuestras sedes</a></li>
+                <li><a href="#eventos">Eventos</a></li>
+                <li><Link to="/profile">Perfil</Link></li>
               </ul>
             </div>
             <div className="homeFooterSection">
               <h4>Contacto</h4>
               <ul>
-                <li>📧 info@bibliotech.com</li>
-                <li>📱 +1 234 567 890</li>
-                <li>📍 Calle Principal 123</li>
+                <li className="homeFooterContact">📍 Av. Principales 123, Centro</li>
+                <li className="homeFooterContact">📧 info@libreriamunicipal.org</li>
+                <li className="homeFooterContact">📞 (555) 123-4567</li>
               </ul>
             </div>
           </div>
           <div className="homeFooterBottom">
-            <p>&copy; 2025 BiblioTech. Todos los derechos reservados.</p>
+            <p>© 2025 Biblioteca Municipal. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>
+
+      {/* Modal del Mapa de Sedes */}
+      {mapaAbierto && <MapaSedes onClose={() => setMapaAbierto(false)} />}
     </div>
   );
 }

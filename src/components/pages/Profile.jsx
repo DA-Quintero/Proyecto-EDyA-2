@@ -13,6 +13,8 @@ import { db } from "../../firebase/config";
 import { setUser } from "../../store/slices/authSlice";
 import { logoutAuth } from "../../store/thunks/logoutAuth";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy, faHeart, faHeartCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 import {
   calcularEstadoDias,
@@ -33,12 +35,20 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("informacion");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingFavId, setSavingFavId] = useState(null);
+  const [editMode, setEditMode] = useState(false);
   const [toast, setToast] = useState("");
   const [prestamosUsuario, setPrestamosUsuario] = useState([]);
   const [historialPrestamos, setHistorialPrestamos] = useState([]);
   const [favoritoLibros, setFavoritoLibros] = useState([]);
 
   const [form, setForm] = useState({
+    email: "",
+    telefono: "",
+    direccion: "",
+  });
+
+  const [originalForm, setOriginalForm] = useState({
     email: "",
     telefono: "",
     direccion: "",
@@ -53,6 +63,37 @@ export default function Profile() {
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 2000);
+  };
+
+  const toggleFavorite = async (libroId) => {
+    if (!user) return;
+
+    setSavingFavId(libroId);
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const favoritos = user.favoritos || [];
+      let nuevosFavoritos;
+
+      if (favoritos.includes(libroId)) {
+        nuevosFavoritos = favoritos.filter(id => id !== libroId);
+      } else {
+        nuevosFavoritos = [...favoritos, libroId];
+      }
+
+      await updateDoc(userRef, { favoritos: nuevosFavoritos });
+      dispatch(setUser({ ...user, favoritos: nuevosFavoritos }));
+      
+      // Actualizar la lista local de favoritos
+      if (!favoritos.includes(libroId)) {
+        setFavoritoLibros(prev => prev.filter(libro => libro.id !== libroId));
+      }
+      
+      showToast(favoritos.includes(libroId) ? "Eliminado de favoritos" : "Agregado a favoritos");
+    } catch (err) {
+      console.error(err);
+      showToast("Error actualizando favoritos ❌");
+    }
+    setSavingFavId(null);
   };
 
   // Procesar fila FIFO
@@ -110,11 +151,14 @@ export default function Profile() {
         if (snap.exists()) {
           const data = snap.data();
 
-          setForm({
+          const formData = {
             email: data.email || "",
             telefono: data.telefono || "",
             direccion: data.direccion || "",
-          });
+          };
+
+          setForm(formData);
+          setOriginalForm(formData);
 
           setExtra({
             createdAt: data.createdAt || null,
@@ -131,8 +175,10 @@ export default function Profile() {
       setLoading(false);
     };
 
-    loadUserData();
-  }, [user, dispatch]);
+    if (loading) {
+      loadUserData();
+    }
+  }, [user?.uid, dispatch, loading]);
 
   useEffect(() => {
     const cargarPrestamos = async () => {
@@ -272,7 +318,9 @@ export default function Profile() {
         })
       );
 
+      setOriginalForm({ ...form });
       showToast("Perfil actualizado ✔️");
+      setEditMode(false);
     } catch (err) {
       console.error("Error guardando cambios:", err);
       showToast("Error al guardar ❌");
@@ -296,23 +344,6 @@ export default function Profile() {
 
   return (
     <div className="profileContainer">
-      <div className="profileLeftPanel">
-        <h3>{user.displayName}</h3>
-
-        <p>
-          Socio desde:{" "}
-          <strong>{extra.createdAt ? formatearFecha(extra.createdAt) : "—"}</strong>
-        </p>
-
-        <p>
-          Préstamos activos: <strong>{extra.prestamosActivos}</strong>
-        </p>
-
-        <p>
-          Libros favoritos: <strong>{extra.favoritos}</strong>
-        </p>
-      </div>
-
       {toast && <div className="toast">{toast}</div>}
 
       <header className="profileHeader">
@@ -320,7 +351,7 @@ export default function Profile() {
           ⬅ Volver
         </button>
 
-        <h2 className="profileTitle">Mi Perfil</h2>
+        <h2 className="profileTitle">Mi perfil</h2>
 
         <button onClick={cerrarSesion} className="profileLogoutBtn">
           Cerrar sesión
@@ -329,157 +360,266 @@ export default function Profile() {
 
       <div className="profileHeaderSpacer" />
 
-      <nav className="profileNavbar">
-        {["informacion", "prestamos", "historial", "favoritos"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`profileNavButton ${
-              activeTab === tab ? "profileActiveTab" : ""
-            }`}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
-      </nav>
+      <div className="profileMainLayout">
+        {/* Panel izquierdo - Tarjeta de perfil */}
+        <div className="profileLeftCard">
+          <div className="profileAvatarSection">
+            <div className="profileAvatarWrapper">
+              <img 
+                src={user.photoURL || "https://via.placeholder.com/150"} 
+                alt="Profile" 
+                className="profileAvatar"
+              />
+            </div>
+            <h3 className="profileUserName">{user.displayName}</h3>
+            <p className="profileMemberSince">
+              Miembro desde {extra.createdAt ? formatearFecha(extra.createdAt) : "Enero 2020"}
+            </p>
+          </div>
 
-      {activeTab === "informacion" && (
-        <div className="profileInfoContent">
-          <div className="profileFormPanel">
-            <label>Email:</label>
-            <input type="email" disabled value={form.email} />
+          <div className="profileStatsSection">
+            <div className="profileStatItem">
+              <div className="profileStatNumber">{extra.prestamosActivos}</div>
+              <div className="profileStatLabel">Préstamos activos</div>
+            </div>
+          </div>
 
-            <label>Teléfono:</label>
-            <input
-              type="text"
-              name="telefono"
-              value={form.telefono}
-              onChange={onChange}
-            />
-
-            <label>Dirección:</label>
-            <input
-              type="text"
-              name="direccion"
-              value={form.direccion}
-              onChange={onChange}
-            />
-
-            <button
-              onClick={saveChanges}
-              disabled={saving}
-              className="profileSaveBtn"
-            >
-              {saving ? "Guardando..." : "Guardar cambios"}
-            </button>
+          <div className="profileIdSection">
+            <div className="profileIdHeader">
+              <span className="profileIdLabel">ID en el Sistema</span>
+              <button 
+                className="profileCopyBtn"
+                onClick={() => {
+                  navigator.clipboard.writeText(user.uid);
+                  showToast("ID copiado al portapapeles ✓");
+                }}
+                title="Copiar ID"
+              >
+                <FontAwesomeIcon icon={faCopy} />
+              </button>
+            </div>
+            <div className="profileIdValue">{user.uid}</div>
           </div>
         </div>
-      )}
 
-     {activeTab === "prestamos" && (
-  <div className="profileSectionBox">
-    <h3>Préstamos activos</h3>
+        {/* Panel derecho - Contenido con tabs */}
+        <div className="profileRightPanel">
+          <nav className="profileTabsNav">
+            {[
+              { key: "informacion", label: "Información" },
+              { key: "prestamos", label: "Préstamos" },
+              { key: "historial", label: "Historial" },
+              { key: "favoritos", label: "Favoritos" }
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`profileTabButton ${
+                  activeTab === tab.key ? "profileTabActive" : ""
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
 
-    {prestamosUsuario.map((p) => {
-      const dias = calcularDiasRestantes(p.fechaDevolucion);
-      const multa = calcularMulta(dias);
-
-      return (
-        <div key={p.id} className="profilePrestamoItem">
-          <p>
-            <strong>Libro:</strong> {p.libroTitulo}
-          </p>
-
-          <p>
-            <strong>Fecha préstamo:</strong>{" "}
-            {formatearFecha(p.fechaPrestamo)}
-          </p>
-
-          <p>
-            <strong>Fecha devolución:</strong>{" "}
-            {formatearFecha(p.fechaDevolucion)}{" "}
-            <span className="profileEstadoDias">
-              {calcularEstadoDias(p.fechaDevolucion)}
-            </span>
-          </p>
-
-          {dias < 0 && (
-            <p className="profileMultaBox">
-              <strong>Multa:</strong> {formatearPesos(multa)}
-            </p>
-          )}
-
-          <p>
-            <strong>Cédula:</strong> {p.cedula}
-          </p>
-          <p>
-            <strong>Teléfono:</strong> {p.telefono}
-          </p>
-
-          <button
-            className="profileDevolverBtn"
-            onClick={() => devolverLibro(p.id, p.libroId)}
-          >
-            Devolver
-          </button>
-        </div>
-      );
-    })}
-  </div>
-)}
-
-
-      {activeTab === "historial" && (
-        <div className="profileSectionBox">
-          <h3>Historial de préstamos</h3>
-
-          {historialPrestamos.length === 0 ? (
-            <p>No hay préstamos devueltos todavía.</p>
-          ) : (
-            historialPrestamos.map((p) => (
-              <div key={p.id} className="profilePrestamoItem">
-                <p>
-                  <strong>Libro:</strong> {p.libroTitulo}
-                </p>
-
-                <p>
-                  <strong>Fecha préstamo:</strong>{" "}
-                  {formatearFecha(p.fechaPrestamo)}
-                </p>
-
-                <p>
-                  <strong>Fecha devolución:</strong>{" "}
-                  {formatearFecha(p.fechaDevolucion)}
-                </p>
-
-                <p>
-                  <strong>Estado:</strong> <span className="profileDevueltoTag">Devuelto ✓</span>
-                </p>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {activeTab === "favoritos" && (
-        <div className="profileSectionBox">
-          <h3>Libros favoritos</h3>
-
-          {favoritoLibros.length === 0 ? (
-            <p>No hay libros favoritos todavía.</p>
-          ) : (
-            favoritoLibros.map((libro) => (
-              <div key={libro.id} className="profileFavItem">
-                <span style={{ fontSize: "2rem" }}>{libro.portada}</span>
-                <div>
-                  <h4>{libro.titulo}</h4>
-                  <p>{libro.autor}</p>
+          <div className="profileTabContent">
+            {activeTab === "informacion" && (
+              <div className="profileInfoBox">
+                <div className="profileInfoHeader">
+                  <h4>Información Personal</h4>
+                  {!editMode ? (
+                    <button className="profileEditBtn" onClick={() => setEditMode(true)}>
+                      ✏️ Editar
+                    </button>
+                  ) : (
+                    <button className="profileCancelBtn" onClick={() => {
+                      setEditMode(false);
+                      setForm({ ...originalForm });
+                    }}>
+                      ✕ Cancelar
+                    </button>
+                  )}
                 </div>
+
+                <div className="profileInfoField">
+                  <label>Nombre Completo</label>
+                  <div className="profileFieldIcon">
+                    👤
+                  </div>
+                  <input type="text" disabled value={user.displayName || ""} />
+                </div>
+
+                <div className="profileInfoField">
+                  <label>Correo electrónico</label>
+                  <div className="profileFieldIcon">
+                    ✉️
+                  </div>
+                  <input type="email" disabled value={form.email} />
+                </div>
+
+                <div className="profileInfoField">
+                  <label>Teléfono</label>
+                  <div className="profileFieldIcon">
+                    📞
+                  </div>
+                  <input
+                    type="text"
+                    name="telefono"
+                    value={form.telefono}
+                    onChange={onChange}
+                    disabled={!editMode}
+                    placeholder="+57 313 661 428"
+                  />
+                </div>
+
+                <div className="profileInfoField">
+                  <label>Dirección</label>
+                  <div className="profileFieldIcon">
+                    📍
+                  </div>
+                  <input
+                    type="text"
+                    name="direccion"
+                    value={form.direccion}
+                    onChange={onChange}
+                    disabled={!editMode}
+                    placeholder="Calle 5 # 13 - 40"
+                  />
+                </div>
+
+                {editMode && (
+                  <button
+                    onClick={saveChanges}
+                    disabled={saving}
+                    className="profileSaveBtn"
+                  >
+                    {saving ? "Guardando..." : "Guardar cambios"}
+                  </button>
+                )}
               </div>
-            ))
-          )}
+            )}
+
+            {activeTab === "prestamos" && (
+              <div className="profileSectionBox">
+                <h3>Préstamos activos</h3>
+
+                {prestamosUsuario.length === 0 ? (
+                  <p>No tienes préstamos activos.</p>
+                ) : (
+                  prestamosUsuario.map((p) => {
+                    const dias = calcularDiasRestantes(p.fechaDevolucion);
+                    const multa = calcularMulta(dias);
+
+                    return (
+                      <div key={p.id} className="profilePrestamoItem">
+                        <p>
+                          <strong>Libro:</strong> {p.libroTitulo}
+                        </p>
+
+                        <p>
+                          <strong>Fecha préstamo:</strong>{" "}
+                          {formatearFecha(p.fechaPrestamo)}
+                        </p>
+
+                        <p>
+                          <strong>Fecha devolución:</strong>{" "}
+                          {formatearFecha(p.fechaDevolucion)}{" "}
+                          <span className="profileEstadoDias">
+                            {calcularEstadoDias(p.fechaDevolucion)}
+                          </span>
+                        </p>
+
+                        {dias < 0 && (
+                          <p className="profileMultaBox">
+                            <strong>Multa:</strong> {formatearPesos(multa)}
+                          </p>
+                        )}
+
+                        <p>
+                          <strong>Cédula:</strong> {p.cedula}
+                        </p>
+                        <p>
+                          <strong>Teléfono:</strong> {p.telefono}
+                        </p>
+
+                        <button
+                          className="profileDevolverBtn"
+                          onClick={() => devolverLibro(p.id, p.libroId)}
+                        >
+                          Devolver
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+
+            {activeTab === "historial" && (
+              <div className="profileSectionBox">
+                <h3>Historial de préstamos</h3>
+
+                {historialPrestamos.length === 0 ? (
+                  <p>No hay préstamos devueltos todavía.</p>
+                ) : (
+                  historialPrestamos.map((p) => (
+                    <div key={p.id} className="profilePrestamoItem">
+                      <p>
+                        <strong>Libro:</strong> {p.libroTitulo}
+                      </p>
+
+                      <p>
+                        <strong>Fecha préstamo:</strong>{" "}
+                        {formatearFecha(p.fechaPrestamo)}
+                      </p>
+
+                      <p>
+                        <strong>Fecha devolución:</strong>{" "}
+                        {formatearFecha(p.fechaDevolucion)}
+                      </p>
+
+                      <p>
+                        <strong>Estado:</strong> <span className="profileDevueltoTag">Devuelto ✓</span>
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {activeTab === "favoritos" && (
+              <div className="profileSectionBox">
+                <h3>Libros favoritos</h3>
+
+                {favoritoLibros.length === 0 ? (
+                  <p>No hay libros favoritos todavía.</p>
+                ) : (
+                  favoritoLibros.map((libro) => {
+                    const isFavorite = user?.favoritos?.includes(libro.id);
+                    return (
+                      <div key={libro.id} className="profileFavItem">
+                        <span style={{ fontSize: "2rem" }}>{libro.portada}</span>
+                        <div className="profileFavInfo">
+                          <h4>{libro.titulo}</h4>
+                          <p>{libro.autor}</p>
+                        </div>
+                        <button
+                          onClick={() => toggleFavorite(libro.id)}
+                          className={isFavorite ? "profileFavBtn profileFavBtnActive" : "profileFavBtn"}
+                          disabled={savingFavId === libro.id}
+                        >
+                          {savingFavId === libro.id ? "..." : isFavorite ? <FontAwesomeIcon icon={faHeartCircleCheck} /> : <FontAwesomeIcon icon={faHeart} />}
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
