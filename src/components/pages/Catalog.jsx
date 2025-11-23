@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase/config";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../../store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -20,22 +20,22 @@ export default function Catalog() {
     const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
     const [selectedAvailability, setSelectedAvailability] = useState("Todos los libros");
 
-    const fetchBooks = async () => {
-        const snap = await getDocs(collection(db, "books"));
+    useEffect(() => {
+        const booksRef = collection(db, "books");
 
-        const list = new DoublyLinkedList();
-
-        snap.docs.forEach(docSnap => {
-            list.append({ id: docSnap.id, ...docSnap.data() });
+        const unsubscribe = onSnapshot(booksRef, (snap) => {
+            const list = new DoublyLinkedList();
+            snap.docs.forEach(docSnap => {
+                list.append({ id: docSnap.id, ...docSnap.data() });
+            });
+            setLibros(list);
+            setLoading(false);
+        }, (err) => {
+            console.error("Error escuchando libros:", err);
+            setLoading(false);
         });
 
-        setLibros(list);
-        setLoading(false);
-    };
-
-
-    useEffect(() => {
-        fetchBooks();
+        return () => unsubscribe();
     }, []);
 
     const toggleFavorite = async (libroId) => {
@@ -181,9 +181,8 @@ export default function Catalog() {
                                 <button
                                     onClick={() => navigate("/prestamo", { state: { libroId: libro.id } })}
                                     className="catalogReserveBtn"
-                                    disabled={libro.disponibles === 0}
                                 >
-                                    Reservar
+                                    {libro.disponibles > 0 ? "Reservar" : "Solicitar en fila de espera"}
                                 </button>
                             </div>
                         </div>

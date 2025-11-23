@@ -30,7 +30,7 @@ export default function Prestamo() {
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     useEffect(() => {
-        if (!libroId || !user) return;
+        if (!libroId) return;
 
         const libroRef = doc(db, "books", libroId);
 
@@ -38,8 +38,11 @@ export default function Prestamo() {
             if (!docSnap.exists()) return;
             const libroData = docSnap.data();
 
-            // Si hay stock y usuario está en fila, procesar fila
-            if (libroData.disponibles > 0) {
+            // Actualiza el estado local del libro en tiempo real
+            setLibro({ id: docSnap.id, ...libroData });
+
+            // Si hay stock y el usuario está logueado, procesar fila de espera
+            if (libroData.disponibles > 0 && user) {
                 procesarFilaEspera(libroId, {
                     userIdActual: user.uid
                 });
@@ -50,16 +53,7 @@ export default function Prestamo() {
     }, [libroId, user]);
 
 
-    if (!libroId) return <p>Error: No se encontró el libro seleccionado.</p>;
-
-    useEffect(() => {
-        const fetchLibro = async () => {
-            const ref = doc(db, "books", libroId);
-            const snap = await getDoc(ref);
-            if (snap.exists()) setLibro({ id: snap.id, ...snap.data() });
-        };
-        fetchLibro();
-    }, [libroId]);
+    
 
     useEffect(() => {
         const cargarPrestamosUsuario = async () => {
@@ -146,15 +140,15 @@ export default function Prestamo() {
 
                 setModalMessage("Préstamo registrado exitosamente 📚");
                 setShowModal(true);
-            } else {
-                await addDoc(collection(db, "filaEspera"), {
-                    libroId,
-                    usuarioId: user.uid,
-                    fechaSolicitud: new Date().toISOString()
-                });
-                setModalMessage("No hay stock, te agregamos a la fila de espera ⏳");
-                setShowModal(true);
-            }
+                        } else {
+                                await addDoc(collection(db, "filaEspera"), {
+                                        libroId,
+                                        usuarioId: user.uid,
+                                        fechaSolicitud: new Date().toISOString()
+                                });
+                                setModalMessage("No hay stock, te agregamos a la fila de espera ⏳");
+                                setShowModal(true);
+                        }
 
             setTimeout(async () => {
                 setShowModal(false);
@@ -166,6 +160,60 @@ export default function Prestamo() {
         } catch (error) {
             console.error("Error guardando préstamo:", error);
             setModalMessage("Hubo un error registrando el préstamo.");
+            setShowModal(true);
+        }
+
+        setLoading(false);
+    };
+
+    const enviarFilaEspera = async () => {
+        setLoading(true);
+
+        try {
+            if (!user) {
+                setModalMessage("Debes iniciar sesión");
+                setShowModal(true);
+                navigate("/login");
+                return;
+            }
+
+            const libroRef = doc(db, "books", libroId);
+            const libroSnap = await getDoc(libroRef);
+            if (!libroSnap.exists()) {
+                setModalMessage("El libro no existe.");
+                setShowModal(true);
+                return;
+            }
+
+            const libroData = libroSnap.data();
+
+            // Si por alguna razón hay stock al pulsar este botón, informar
+            if (libroData.disponibles > 0) {
+                setModalMessage("Hay stock disponible, puedes solicitar el préstamo normalmente.");
+                setShowModal(true);
+                setLoading(false);
+                return;
+            }
+
+                        await addDoc(collection(db, "filaEspera"), {
+                                libroId,
+                                usuarioId: user.uid,
+                                fechaSolicitud: new Date().toISOString(),
+                                cedula: form.cedula || null,
+                                telefono: form.telefono || null,
+                                observaciones: form.observaciones || null
+                        });
+
+                        setModalMessage("Te hemos agregado a la fila de espera ⏳");
+                        setShowModal(true);
+
+            setTimeout(() => {
+                setShowModal(false);
+                navigate("/profile");
+            }, 1800);
+        } catch (error) {
+            console.error("Error agregando a fila de espera:", error);
+            setModalMessage("Hubo un error agregando a la fila de espera.");
             setShowModal(true);
         }
 
@@ -247,13 +295,24 @@ export default function Prestamo() {
                         </div>
 
                         <div className="prestamoFormActions">
-                            <button 
-                                type="submit" 
-                                className={yaPrestado ? "prestamoBotonPrestado" : "prestamoBoton"} 
-                                disabled={yaPrestado || loading || form.cedula.length < 8 || form.telefono.length !== 10}
-                            >
-                                {loading ? "Procesando..." : yaPrestado ? "Ya tienes este libro prestado" : "Solicitar préstamo"}
-                            </button>
+                            {libro?.disponibles > 0 ? (
+                                <button
+                                    type="submit"
+                                    className={yaPrestado ? "prestamoBotonPrestado" : "prestamoBoton"}
+                                    disabled={yaPrestado || loading || form.cedula.length < 8 || form.telefono.length !== 10}
+                                >
+                                    {loading ? "Procesando..." : yaPrestado ? "Ya tienes este libro prestado" : "Solicitar préstamo"}
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={enviarFilaEspera}
+                                    className={yaPrestado ? "prestamoBotonPrestado" : "prestamoBoton"}
+                                    disabled={yaPrestado || loading || form.cedula.length < 8 || form.telefono.length !== 10}
+                                >
+                                    {loading ? "Procesando..." : yaPrestado ? "Ya tienes este libro prestado" : "Solicitar en fila de espera"}
+                                </button>
+                            )}
                         </div>
                     </form>
                 </div>
