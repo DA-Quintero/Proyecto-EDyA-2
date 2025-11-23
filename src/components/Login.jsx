@@ -3,6 +3,9 @@ import { useDispatch } from "react-redux";
 import { loginWithGoogle } from "../store/thunks/loginGoogle";
 import { loginWithEmailAndPassword } from "../store/thunks/loginAuth";
 import { useNavigate, Link } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import "../App.scss";
 
 const Login = () => {
@@ -36,9 +39,16 @@ const Login = () => {
   return (
     <div className="authWrapper">
       <div className="authCard">
+        <div className="authLogoHeader">
+          <div className="authLogoIcon">
+            <FontAwesomeIcon icon={faBookOpen} />
+          </div>
+          <h1 className="authLogoTitle">Librería Municipal</h1>
+        </div>
+
         <div className="authHeader">
           <h2 className="authTitle">Iniciar sesión</h2>
-          <p className="authSubtitle">Bienvenido de vuelta a BiblioTech</p>
+          <p className="authSubtitle">Ingresa tus credenciales para acceder a tu cuenta</p>
         </div>
 
         <form onSubmit={handleEmailLogin} className="authForm">
@@ -68,18 +78,18 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className="authPrimaryBtn">Entrar</button>
+          <button type="submit" className="authPrimaryBtn">Iniciar sesión</button>
         </form>
 
         <button type="button" onClick={handleGoogleLogin} className="authGoogleBtn">
-          <span>🔵</span>
+          <FontAwesomeIcon icon={faGoogle} />
           Iniciar sesión con Google
         </button>
 
         {error && <p className="authError">{error}</p>}
 
         <p className="authSwitch">
-          ¿No tienes cuenta? {" "}
+          ¿No tienes una cuenta? {" "}
           <Link to="/register" className="authLink">Regístrate aquí</Link>
         </p>
       </div>

@@ -197,7 +197,7 @@
   max-width: 100vw;
   display: grid;
   place-items: center;
-  background: $bg-gray;
+  background: #f5f5f7;
   padding: 1rem;
   overflow-x: hidden;
   
@@ -209,81 +209,157 @@
 .authCard {
   width: 100%;
   max-width: 420px;
-  background: $bg-white;
-  border-radius: 12px;
-  box-shadow: $shadow-xl;
-  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem 2rem;
+}
+
+.authLogoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.authLogoIcon {
+  font-size: 2.5rem;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.authLogoTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin: 0;
 }
 
 .authHeader {
   text-align: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
 }
 
 .authTitle {
   margin: 0;
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: $text-dark;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1d1d1f;
 }
 
 .authSubtitle {
-  margin-top: .25rem;
-  color: $text-muted;
-  font-size: .95rem;
+  margin-top: .5rem;
+  color: #86868b;
+  font-size: .9rem;
 }
 
 .authForm {
   display: grid;
-  gap: .9rem;
+  gap: 1.25rem;
 }
 
 .authFormGroup {
   display: grid;
-  gap: .4rem;
+  gap: .5rem;
 }
 
 .authLabel {
   font-size: .9rem;
-  color: $text-dark;
+  font-weight: 600;
+  color: #1d1d1f;
 }
 
 .authInput {
   width: 100%;
-  padding: .8rem 1rem;
-  border: 1px solid $border-light;
-  border-radius: 10px;
-  font-size: 1rem;
+  padding: .85rem 1rem;
+  border: 1px solid #d1d1d6;
+  border-radius: 8px;
+  font-size: .95rem;
   outline: none;
-  transition: border-color $transition-base, box-shadow $transition-base;
+  transition: all 0.2s ease;
+  background: #fafafa;
 
   &:focus {
-    border-color: $primary;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+  
+  &::placeholder {
+    color: #86868b;
+  }
+}
+
+.authRememberForgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.authCheckboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #1d1d1f;
+  cursor: pointer;
+  
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+}
+
+.authForgotLink {
+  font-size: 0.85rem;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  
+  &:hover {
+    text-decoration: underline;
   }
 }
 
 .authPrimaryBtn {
   width: 100%;
-  background: $primary;
+  background: #2563eb;
   color: white;
   border: none;
-  border-radius: 10px;
-  padding: .9rem 1rem;
-  font-weight: 700;
+  border-radius: 8px;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background $transition-base, transform $transition-fast;
+  transition: all 0.2s ease;
 
-  &:hover { background: $primary-dark; }
-  &:active { transform: translateY(1px); }
+  &:hover { 
+    background: #1e40af;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+  
+  &:active { 
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    background: #d1d1d6;
+    cursor: not-allowed;
+    transform: none;
+  }
 }
 
 .authGoogleBtn {
   width: 100%;
-  background: $bg-white;
-  color: $text-primary;
-  border: 1px solid $border-light;
-  border-radius: 10px;
+  background: white;
+  color: #1d1d1f;
+  border: 1px solid #d1d1d6;
+  border-radius: 8px;
   padding: .85rem 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -291,28 +367,40 @@
   align-items: center;
   justify-content: center;
   gap: .5rem;
-  transition: background $transition-base;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
 
-  &:hover { background: $bg-gray; }
+  &:hover { 
+    background: #f5f5f7;
+    border-color: #86868b;
+  }
 }
 
 .authError {
-  color: $danger;
+  color: #ff3b30;
   text-align: center;
-  font-size: .95rem;
+  font-size: .9rem;
+  background: #fff5f5;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-top: 1rem;
 }
 
 .authSwitch {
-  margin-top: .75rem;
+  margin-top: 1.5rem;
   text-align: center;
-  color: $text-muted;
+  color: #86868b;
+  font-size: 0.9rem;
 }
 
 .authLink {
-  color: $primary;
+  color: #2563eb;
   text-decoration: none;
   font-weight: 600;
-  &:hover { color: $primary-dark; }
+  &:hover { 
+    color: #1e40af;
+    text-decoration: underline;
+  }
 }
 
 // PROFILE PAGE
@@ -1127,114 +1215,222 @@
 // PRESTAMO PAGE
 
 .prestamoContainer {
-  max-width: 480px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 1rem;
-  font-family: "Inter", sans-serif;
+  padding: 2rem;
+  min-height: 100vh;
+  background: #f5f5f7;
   
-  @media (min-width: 768px) {
-    padding: 2rem;
+  @media (max-width: 768px) {
+    padding: 1rem;
   }
 }
 
 .prestamoHeader {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e5e7;
 }
 
 .prestamoBackBtn {
-  background: none;
-  border: none;
-  font-size: 16px;
+  background: white;
+  border: 2px solid #e5e5e7;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  color: $text-dark;
-  transition: color $transition-base, transform $transition-base;
+  color: #1d1d1f;
+  transition: all 0.2s ease;
 
   &:hover {
-    color: $text-primary;
+    border-color: #4A90E2;
+    color: #4A90E2;
     transform: translateX(-3px);
   }
 }
 
 .prestamoTitle {
-  font-size: 24px;
-  text-align: center;
+  font-size: 1.75rem;
   font-weight: 700;
-  margin-bottom: 20px;
-  color: $text-primary;
+  color: #1d1d1f;
+  margin: 0;
 }
 
-.prestamoBookName {
-  background: $bg-body;
-  padding: 12px 15px;
-  border-radius: 10px;
-  font-size: 16px;
-  margin-bottom: 20px;
-  border-left: 5px solid $info;
-  color: $text-dark;
-
-  strong {
-    color: $primary-dark;
+.prestamoContent {
+  display: grid;
+  gap: 2rem;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1.5fr;
   }
+}
+
+.prestamoLibroCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: fit-content;
+}
+
+.prestamoLibroEmoji {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+}
+
+.prestamoLibroInfo {
+  width: 100%;
+  
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin: 0 0 0.75rem 0;
+  }
+  
+  p {
+    color: #86868b;
+    font-size: 0.95rem;
+    margin: 0.5rem 0;
+  }
+}
+
+.prestamoLibroBadgeAvailable {
+  display: inline-block;
+  background: #d4edda;
+  color: #155724;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.prestamoLibroBadgeUnavailable {
+  display: inline-block;
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 1rem;
 }
 
 .prestamoForm {
-  background: $bg-white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: $shadow-lg;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.prestamoFormSection {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-
-  label {
-    font-size: 15px;
-    font-weight: 600;
-    color: $text-dark;
+  gap: 1.5rem;
+  
+  h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin: 0 0 0.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f5f5f7;
   }
+}
 
+.prestamoFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  
+  label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1d1d1f;
+  }
+  
   input,
   textarea {
     width: 100%;
-    padding: 12px 14px;
-    font-size: 15px;
-    border-radius: 10px;
-    border: 1px solid $border-light;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    border: 2px solid #e5e5e7;
     outline: none;
-    transition: border-color $transition-base, box-shadow $transition-base;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
     &:focus {
-      border-color: $info;
-      box-shadow: 0 0 4px rgba(76, 139, 245, 0.4);
+      border-color: #4A90E2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+    
+    &::placeholder {
+      color: #86868b;
     }
   }
 
   textarea {
-    min-height: 90px;
     resize: vertical;
+    min-height: 100px;
+  }
+  
+  small {
+    color: #86868b;
+    font-size: 0.85rem;
   }
 }
 
-.prestamoSubmitBtn {
-  background: $info;
+.prestamoFormActions {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #f5f5f7;
+}
+
+.prestamoBoton {
+  width: 100%;
+  background: #4A90E2;
   border: none;
-  padding: 12px;
+  padding: 1rem;
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: white;
   cursor: pointer;
-  transition: background $transition-base;
+  transition: all 0.2s ease;
 
-  &:hover {
-    background: $info-dark;
+  &:hover:not(:disabled) {
+    background: #357ABD;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
   }
 
   &:disabled {
-    background: color.adjust($info, $lightness: 30%);
+    background: #d1d1d6;
     cursor: not-allowed;
+    transform: none;
   }
+}
+
+.prestamoBotonPrestado {
+  width: 100%;
+  background: #f8d7da;
+  border: 2px solid #f5c6cb;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #721c24;
+  cursor: not-allowed;
 }
 
 @media (max-width: 480px) {

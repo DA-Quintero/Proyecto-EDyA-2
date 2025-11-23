@@ -296,7 +296,18 @@ export default function Profile() {
   }, [user]);
 
   const onChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Validar teléfono
+    if (name === "telefono") {
+      const numericValue = value.replace(/\D/g, "");
+      if (numericValue.length <= 10) {
+        setForm({ ...form, [name]: numericValue });
+      }
+      return;
+    }
+    
+    setForm({ ...form, [name]: value });
   };
 
   const saveChanges = async () => {
@@ -469,8 +480,10 @@ export default function Profile() {
                     value={form.telefono}
                     onChange={onChange}
                     disabled={!editMode}
-                    placeholder="+57 313 661 428"
+                    placeholder="3001234567"
+                    maxLength="10"
                   />
+                  {editMode && <small style={{ color: "#86868b", fontSize: "0.85rem", marginTop: "0.25rem" }}>{form.telefono.length}/10 dígitos (requerido: 10)</small>}
                 </div>
 
                 <div className="profileInfoField">
@@ -491,7 +504,7 @@ export default function Profile() {
                 {editMode && (
                   <button
                     onClick={saveChanges}
-                    disabled={saving}
+                    disabled={saving || form.telefono.length !== 10}
                     className="profileSaveBtn"
                   >
                     {saving ? "Guardando..." : "Guardar cambios"}

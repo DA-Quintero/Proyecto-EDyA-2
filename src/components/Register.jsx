@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerAuth } from "../store/thunks/registerAuth";
 import { useNavigate, Link } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBookOpen } from '@fortawesome/free-solid-svg-icons';
 import "../App.scss";
 
 const Register = () => {
@@ -29,9 +31,16 @@ const Register = () => {
   return (
     <div className="authWrapper">
       <div className="authCard">
+        <div className="authLogoHeader">
+          <div className="authLogoIcon">
+            <FontAwesomeIcon icon={faBookOpen} />
+          </div>
+          <h1 className="authLogoTitle">Librería Municipal</h1>
+        </div>
+
         <div className="authHeader">
           <h2 className="authTitle">Crear cuenta</h2>
-          <p className="authSubtitle">Únete a BiblioTech en segundos</p>
+          <p className="authSubtitle">Regístrate para acceder a todos nuestros servicios</p>
         </div>
 
         <form onSubmit={handleSubmit} className="authForm">

@@ -75,7 +75,30 @@ export default function Prestamo() {
         cargarPrestamosUsuario();
     }, [user]);
 
-    const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    const onChange = (e) => {
+        const { name, value } = e.target;
+        
+        // Validar cédula: solo números, máximo 10 dígitos
+        if (name === "cedula") {
+            const numericValue = value.replace(/\D/g, "");
+            if (numericValue.length <= 10) {
+                setForm({ ...form, [name]: numericValue });
+            }
+            return;
+        }
+        
+        // Validar teléfono: solo números, máximo 10 dígitos
+        if (name === "telefono") {
+            const numericValue = value.replace(/\D/g, "");
+            if (numericValue.length <= 10) {
+                setForm({ ...form, [name]: numericValue });
+            }
+            return;
+        }
+        
+        setForm({ ...form, [name]: value });
+    };
+    
     const yaPrestado = prestamosUsuario.some((p) => p.libroId === libro?.id);
 
 
@@ -162,27 +185,78 @@ export default function Prestamo() {
 
             <div className="prestamoContainer">
                 <header className="prestamoHeader">
-                    <button className="prestamoBackBtn" onClick={() => navigate("/")}>⬅ Volver</button>
+                    <button className="prestamoBackBtn" onClick={() => navigate(-1)}>⬅ Volver</button>
+                    <h2 className="prestamoTitle">Registrar préstamo</h2>
                 </header>
 
-                <h2 className="prestamoTitle">Registrar préstamo</h2>
+                <div className="prestamoContent">
+                    {libro && (
+                        <div className="prestamoLibroCard">
+                            <div className="prestamoLibroEmoji">{libro.portada}</div>
+                            <div className="prestamoLibroInfo">
+                                <h3>{libro.titulo}</h3>
+                                <p>📖 {libro.autor}</p>
+                                <p>📚 {libro.genero}</p>
+                                <span className={libro.disponibles > 0 ? "prestamoLibroBadgeAvailable" : "prestamoLibroBadgeUnavailable"}>
+                                    {libro.disponibles > 0 ? `${libro.disponibles} disponibles` : "Sin stock"}
+                                </span>
+                            </div>
+                        </div>
+                    )}
 
-                {libro && <p className="prestamoBookName"><strong>Libro:</strong> {libro.titulo}</p>}
+                    <form className="prestamoForm" onSubmit={enviarPrestamo}>
+                        <div className="prestamoFormSection">
+                            <h4>Datos del solicitante</h4>
+                            
+                            <div className="prestamoFormField">
+                                <label>Cédula</label>
+                                <input 
+                                    name="cedula" 
+                                    value={form.cedula} 
+                                    onChange={onChange} 
+                                    placeholder="Ej: 1234567890"
+                                    maxLength="10"
+                                    required 
+                                />
+                                <small>{form.cedula.length}/10 dígitos (mínimo 8)</small>
+                            </div>
 
-                <form className="prestamoForm" onSubmit={enviarPrestamo}>
-                    <label>Cédula</label>
-                    <input name="cedula" value={form.cedula} onChange={onChange} required />
+                            <div className="prestamoFormField">
+                                <label>Teléfono</label>
+                                <input 
+                                    name="telefono" 
+                                    value={form.telefono} 
+                                    onChange={onChange}
+                                    placeholder="Ej: 3001234567"
+                                    maxLength="10"
+                                    required 
+                                />
+                                <small>{form.telefono.length}/10 dígitos (requerido: 10)</small>
+                            </div>
 
-                    <label>Teléfono</label>
-                    <input name="telefono" value={form.telefono} onChange={onChange} required />
+                            <div className="prestamoFormField">
+                                <label>Observaciones (opcional)</label>
+                                <textarea 
+                                    name="observaciones" 
+                                    value={form.observaciones} 
+                                    onChange={onChange}
+                                    placeholder="Comentarios adicionales..."
+                                    rows="4"
+                                />
+                            </div>
+                        </div>
 
-                    <label>Observaciones</label>
-                    <textarea name="observaciones" value={form.observaciones} onChange={onChange} />
-
-                    <button type="submit" className={yaPrestado ? "prestamoBotonPrestado" : "prestamoBoton"} disabled={yaPrestado || loading}>
-                        {yaPrestado ? "Ya está en préstamo" : "Solicitar préstamo"}
-                    </button>
-                </form>
+                        <div className="prestamoFormActions">
+                            <button 
+                                type="submit" 
+                                className={yaPrestado ? "prestamoBotonPrestado" : "prestamoBoton"} 
+                                disabled={yaPrestado || loading || form.cedula.length < 8 || form.telefono.length !== 10}
+                            >
+                                {loading ? "Procesando..." : yaPrestado ? "Ya tienes este libro prestado" : "Solicitar préstamo"}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </>
     );
